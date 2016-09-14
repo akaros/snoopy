@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -55,7 +60,7 @@ p_compile(Filter *f)
 		compile_cmp(aoeata.name, f, p_fields);
 		return;
 	}
-	sysfatal("unknown aoeata field: %s", f->s);
+	error(1, 0, "unknown aoeata field: %s", f->s);
 }
 
 uint64_t
@@ -116,7 +121,7 @@ p_seprint(Msg *m)
 	m->ps += Hsize;
 
 	/* no next protocol */
-	m->pr = nil;
+	m->pr = NULL;
 
 	m->p = seprint(m->p, m->e, "aflag=%x errfeat=%x sectors=%x cmdstat=%x lba=%lld",
 		h->aflag, h->feat, h->sectors, h->cmd, llba(h->lba));
@@ -129,8 +134,8 @@ Proto aoeata =
 	p_compile,
 	p_filter,
 	p_seprint,
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_fields,
 	defaultframer,
 };

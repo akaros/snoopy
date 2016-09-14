@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -159,14 +164,14 @@ p_compile(Filter *f)
 		compile_cmp(ip6.name, f, p_fields);
 		return;
 	}
-	for(m = p_mux; m->name != nil; m++)
+	for(m = p_mux; m->name != NULL; m++)
 		if(strcmp(f->s, m->name) == 0){
 			f->pr = m->pr;
 			f->ulv = m->val;
 			f->subop = Ot;
 			return;
 		}
-	sysfatal("unknown ip6 field or protocol: %s", f->s);
+	error(1, 0, "unknown ip6 field or protocol: %s", f->s);
 }
 
 static int

@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -76,7 +81,7 @@ p_seprint(Msg *m)
 			NetL(r->ssrc), frac, NetL(r->lost), NetL(r->seqhi),
 			NetL(r->jitter), NetL(r->lsr), dlsr);
 	}
-	m->pr = nil;
+	m->pr = NULL;
 	return 0;
 }
 

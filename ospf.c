@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include <libsec.h>
 #include "dat.h"
 #include "protos.h"
@@ -382,7 +387,7 @@ Default:
 		p = seprint(p, e, " data=%.*H", x>64?64:x, ospf->data);
 	}
 	m->p = p;
-	m->pr = nil;
+	m->pr = NULL;
 	return 0;
 }
 

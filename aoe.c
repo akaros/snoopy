@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -64,7 +69,7 @@ p_compile(Filter *f)
 			f->subop = Ocmd;
 			return;
 		}
-	sysfatal("unknown aoe field: %s", f->s);
+	error(1, 0, "unknown aoe field: %s", f->s);
 }
 
 static int

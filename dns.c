@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 #include "../../ndb/dns.h"
@@ -97,7 +102,7 @@ fmtrr(Msg *m, RR **rrp, int quest)
 	RR *rr;
 
 	rr = *rrp;
-	if(rr == nil)
+	if(rr == NULL)
 		return;
 	*rrp = rr->next;
 
@@ -191,7 +196,7 @@ p_seprint(Msg *m)
 {
 	char *e;
 
-	if((e = convM2DNS(m->ps, m->pe-m->ps, &dm, nil)) != nil){
+	if((e = convM2DNS(m->ps, m->pe-m->ps, &dm, nil)) != NULL){
 		m->p = seprint(m->p, m->e, "error: %s", e);
 		return 0;
 	}
@@ -214,7 +219,7 @@ donext(Msg *m)
 	else{
 		freealldn();
 		memset(&dm, 0, sizeof dm);
-		m->pr = nil;
+		m->pr = NULL;
 	}
 }
 
@@ -317,8 +322,8 @@ emalloc(int n)
 	void *v;
 
 	v = mallocz(n, 1);
-	if(v == nil)
-		sysfatal("out of memory");
+	if(v == NULL)
+		error(1, 0, "out of memory");
 	return v;
 }
 
@@ -326,8 +331,8 @@ char*
 estrdup(char *s)
 {
 	s = strdup(s);
-	if(s == nil)
-		sysfatal("out of memory");
+	if(s == NULL)
+		error(1, 0, "out of memory");
 	return s;
 }
 
@@ -381,7 +386,7 @@ rrname(int type, char *buf, int len)
 {
 	char *t;
 
-	t = nil;
+	t = NULL;
 	if(type >= 0 && type <= Tall)
 		t = rrtname[type];
 	if(t==nil){
@@ -410,7 +415,7 @@ freeserverlist(Server *s)
 {
 	Server *next;
 
-	for(; s != nil; s = next){
+	for(; s != NULL; s = next){
 		next = s->next;
 		free(s);
 	}
@@ -432,7 +437,7 @@ rralloc(int type)
 	switch(type){
 	case Tsoa:
 		rp->soa = emalloc(sizeof(*rp->soa));
-		rp->soa->slaves = nil;
+		rp->soa->slaves = NULL;
 		setmalloctag(rp->soa, rp->pc);
 		break;
 	case Tsrv:
@@ -513,7 +518,7 @@ rrfree(RR *rp)
 		free(rp->null);
 		break;
 	case Ttxt:
-		while(rp->txt != nil){
+		while(rp->txt != NULL){
 			t = rp->txt;
 			rp->txt = t->next;
 			free(t->p);

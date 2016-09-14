@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include <libsec.h>
 #include "dat.h"
 #include "protos.h"
@@ -148,7 +153,7 @@ p_compile(Filter *f)
 {
 	Mux *m;
 
-	for(m = p_mux; m->name != nil; m++)
+	for(m = p_mux; m->name != NULL; m++)
 		if(strcmp(f->s, m->name) == 0){
 			f->pr = m->pr;
 			f->ulv = m->val;
@@ -156,7 +161,7 @@ p_compile(Filter *f)
 			return;
 		}
 
-	sysfatal("unknown ppp field or protocol: %s", f->s);
+	error(1, 0, "unknown ppp field or protocol: %s", f->s);
 }
 
 static int
@@ -220,7 +225,7 @@ p_seprintchap(Msg *m)
 
 	p = m->p;
 	e = m->e;
-	m->pr = nil;
+	m->pr = NULL;
 
 	/* resize packet */
 	lcp = (Lcppkt*)m->ps;
@@ -338,7 +343,7 @@ p_seprintlcp(Msg *m)
 
 	p = m->p;
 	e = m->e;
-	m->pr = nil;
+	m->pr = NULL;
 
 	lcp = (Lcppkt*)m->ps;
 	len = NetS(lcp->len);
@@ -431,7 +436,7 @@ p_seprintipcp(Msg *m)
 
 	p = m->p;
 	e = m->e;
-	m->pr = nil;
+	m->pr = NULL;
 
 	lcp = (Lcppkt*)m->ps;
 	len = NetS(lcp->len);
@@ -508,7 +513,7 @@ p_seprintccp(Msg *m)
 
 	p = m->p;
 	e = m->e;
-	m->pr = nil;
+	m->pr = NULL;
 
 	lcp = (Lcppkt*)m->ps;
 	len = NetS(lcp->len);
@@ -567,7 +572,7 @@ p_seprintcomp(Msg *m)
 	compflag[i] = 0;
 	m->p = seprint(m->p, m->e, "flag=%s count=%.3x", compflag, x&0xfff);
 	m->p = seprint(m->p, m->e, " data=%.*H", len>64?64:len, m->ps);
-	m->pr = nil;
+	m->pr = NULL;
 	return 0;
 }
 

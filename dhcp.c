@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -201,7 +206,7 @@ ptype(char *p, char *e, uint8_t val)
 	char *x;
 
 	x = dhcptype[val];
-	if(x != nil)
+	if(x != NULL)
 		return seprint(p, e, "t=%s", x);
 	else
 		return seprint(p, e, "t=%d", val);
@@ -216,7 +221,7 @@ p_seprint(Msg *m)
 	char msg[64];
 
 	/* no next proto */
-	m->pr = nil;
+	m->pr = NULL;
 
 	p = m->p;
 	e = m->e;

@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -90,7 +95,7 @@ p_compile(Filter *f)
 		f->subop = Op;
 		return;
 	}
-	sysfatal("unknown icmp field or protocol: %s", f->s);
+	error(1, 0, "unknown icmp field or protocol: %s", f->s);
 }
 
 static int
@@ -140,7 +145,7 @@ p_seprint(Msg *m)
 		return -1;
 
 	tn = icmpmsg[h->type];
-	if(tn == nil)
+	if(tn == NULL)
 		p = seprint(p, e, "t=%u c=%d ck=%4.4x", h->type,
 			h->code, (uint16_t)NetS(h->cksum));
 	else
@@ -167,7 +172,7 @@ p_seprint(Msg *m)
 		p = seprint(p, e, " orig=%u rcv=%x xmt=%x",
 			NetL(h->data), NetL(h->data+4),
 			NetL(h->data+8));
-		m->pr = nil;
+		m->pr = NULL;
 		break;
 	case InfoReq:
 	case InfoRep:

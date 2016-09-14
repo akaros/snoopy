@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -39,7 +44,7 @@ p_compile(Filter *f)
 		compile_cmp(aoemd.name, f, p_fields);
 		return;
 	}
-	sysfatal("unknown aoemd field: %s", f->s);
+	error(1, 0, "unknown aoemd field: %s", f->s);
 }
 
 static int
@@ -85,7 +90,7 @@ p_seprint(Msg *m)
 	m->ps += Hsize;
 
 	/* no next protocol */
-	m->pr = nil;
+	m->pr = NULL;
 
 	s = "unk";
 	if(h->cmd < nelem(ctab))

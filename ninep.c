@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include <fcall.h>
 #include "dat.h"
 #include "protos.h"
@@ -28,13 +33,13 @@ p_seprint(Msg *m)
 		m->p = seprint(m->p, m->e, "%F", &f);
 		while(p < m->p){
 			p = strchr(p, '\n');
-			if(p == nil)
+			if(p == NULL)
 				break;
 			*p = '\\';
 		}
 	} else
 		dump.seprint(m);
-	m->pr = nil;
+	m->pr = NULL;
 	return 0;
 }
 

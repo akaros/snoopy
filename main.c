@@ -10,9 +10,14 @@
 /*
  * snoopy - network sniffer
  */
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include <bio.h>
 #include <fcall.h>
 #include <libsec.h>
@@ -121,7 +126,7 @@ main(int argc, char **argv)
 	case 'h':
 		p = EARGF(usage());
 		root = findproto(p);
-		if(root == nil)
+		if(root == NULL)
 			sysfatal("unknown protocol: %s", p);
 		break;
 	case 'd':
@@ -147,13 +152,13 @@ main(int argc, char **argv)
 
 	if(argc == 0){
 		file = "/net/ether0";
-		if(root != nil)
+		if(root != NULL)
 			root = &ether;
 	} else
 		file = argv[0];
 
 	if((!tiflag) && strstr(file, "ether")){
-		if(root == nil)
+		if(root == NULL)
 			root = &ether;
 		snprint(buf, Blen, "%s!-1", file);
 		fd = dial(buf, 0, 0, &cfd);
@@ -162,14 +167,14 @@ main(int argc, char **argv)
 		if(pflag && fprint(cfd, prom, strlen(prom)) < 0)
 			sysfatal("setting %s", prom);
 	} else if((!tiflag) && strstr(file, "ipifc")){
-		if(root == nil)
+		if(root == NULL)
 			root = &ip;
 		snprint(buf, Blen, "%s/snoop", file);
 		fd = open(buf, OREAD);
 		if(fd < 0)
 			sysfatal("opening %s: %r", buf);
 	} else {
-		if(root == nil)
+		if(root == NULL)
 			root = &ether;
 		fd = open(file, OREAD);
 		if(fd < 0)
@@ -220,8 +225,8 @@ newfilter(void)
 	Filter *f;
 
 	f = mallocz(sizeof(*f), 1);
-	if(f == nil)
-		sysfatal("newfilter: %r");
+	if(f == NULL)
+		error(1, 0, "newfilter: %r");
 	return f;
 }
 
@@ -233,7 +238,7 @@ _filterpkt(Filter *f, Msg *m)
 {
 	Msg ma;
 
-	if(f == nil)
+	if(f == NULL)
 		return 1;
 
 	switch(f->op){
@@ -254,12 +259,12 @@ _filterpkt(Filter *f, Msg *m)
 			if(m->pr && (m->pr->filter==nil || !(m->pr->filter)(f, m)))
 				return 0;
 		}
-		if(f->l == nil)
+		if(f->l == NULL)
 			return 1;
 		m->pr = f->pr;
 		return _filterpkt(f->l, m);
 	}
-	sysfatal("internal error: filterpkt op: %d", f->op);
+	error(1, 0, "internal error: filterpkt op: %d", f->op);
 	return 0;
 }
 int
@@ -267,7 +272,7 @@ filterpkt(Filter *f, uint8_t *ps, uint8_t *pe, Proto *pr, int needroot)
 {
 	Msg m;
 
-	if(f == nil)
+	if(f == NULL)
 		return 1;
 
 	m.needroot = needroot;
@@ -368,13 +373,13 @@ printpkt(char *p, char *e, uint8_t *ps, uint8_t *pe)
 			m.ps = m.pe;
 		}
 		m.p = seprint(m.p, m.e, ")");
-		if(m.pr == nil || m.ps >= m.pe)
+		if(m.pr == NULL || m.ps >= m.pe)
 			break;
 	}
 	*m.p++ = '\n';
 
 	if(write(1, p, m.p - p) < 0)
-		sysfatal("stdout: %r");
+		error(1, 0, "stdout: %r");
 }
 
 Proto **xprotos;
@@ -420,16 +425,16 @@ mkprotograph(void)
 	Mux *m;
 
 	/* copy protos into a reallocable area */
-	for(nprotos = 0; protos[nprotos] != nil; nprotos++)
+	for(nprotos = 0; protos[nprotos] != NULL; nprotos++)
 		;
 	xprotos = malloc(nprotos*sizeof(Proto*));
 	memmove(xprotos, protos, nprotos*sizeof(Proto*));
 
-	for(l = protos; *l != nil; l++){
+	for(l = protos; *l != NULL; l++){
 		pr = *l;
-		for(m = pr->mux; m != nil && m->name != nil; m++){
+		for(m = pr->mux; m != NULL && m->name != nil; m++){
 			m->pr = findproto(m->name);
-			if(m->pr == nil)
+			if(m->pr == NULL)
 				m->pr = addproto(m->name);
 		}
 	}
@@ -463,13 +468,13 @@ _fillin(Filter *f, Proto *last, int depth)
 	if(depth-- <= 0)
 		return nil;
 
-	for(m = last->mux; m != nil && m->name != nil; m++){
-		if(m->pr == nil)
+	for(m = last->mux; m != NULL && m->name != nil; m++){
+		if(m->pr == NULL)
 			continue;
 		if(f->pr == m->pr)
 			return f;
 		nf = _fillin(f, m->pr, depth);
-		if(nf != nil)
+		if(nf != NULL)
 			return addnode(nf, m->pr);
 	}
 	return nil;
@@ -482,11 +487,11 @@ fillin(Filter *f, Proto *last)
 	Filter *nf;
 
 	/* hack to make sure top level node is the root */
-	if(last == nil){
+	if(last == NULL){
 		if(f->pr == root)
 			return f;
 		f = fillin(f, root);
-		if(f == nil)
+		if(f == NULL)
 			return nil;
 		return addnode(f, root);
 	}
@@ -495,7 +500,7 @@ fillin(Filter *f, Proto *last)
 	nf = f;
 	for(i = 1; i < 20; i++){
 		nf = _fillin(f, last, i);
-		if(nf != nil)
+		if(nf != NULL)
 			break;
 	}
 	return nf;
@@ -512,7 +517,7 @@ complete(Filter *f, Proto *last)
 {
 	Proto *pr;
 
-	if(f == nil)
+	if(f == NULL)
 		return f;
 
 	/* do a depth first traversal of the filter tree */
@@ -530,17 +535,17 @@ complete(Filter *f, Proto *last)
 	case WORD:
 		pr = findproto(f->s);
 		f->pr = pr;
-		if(pr == nil){
-			if(f->l != nil){
+		if(pr == NULL){
+			if(f->l != NULL){
 				fprint(2, "%s unknown proto, ignoring params\n",
 					f->s);
-				f->l = nil;
+				f->l = NULL;
 			}
 		} else {
 			f->l = complete(f->l, pr);
 			f = fillin(f, last);
-			if(f == nil)
-				sysfatal("internal error: can't get to %s", pr->name);
+			if(f == NULL)
+				error(1, 0, "internal error: can't get to %s", pr->name);
 		}
 		break;
 	}
@@ -561,7 +566,7 @@ _optimize(Filter *f)
 {
 	Filter *l;
 
-	if(f == nil)
+	if(f == NULL)
 		return f;
 
 	switch(f->op){
@@ -575,16 +580,16 @@ _optimize(Filter *f)
 	case LOR:
 		/* are two children the same protocol? */
 		if(f->l->op != f->r->op || f->r->op != WORD
-		|| f->l->pr != f->r->pr || f->l->pr == nil)
+		|| f->l->pr != f->r->pr || f->l->pr == NULL)
 			break;	/* no optimization */
 
 		changed = 1;
 
 		/* constant folding */
 		/* if either child is childless, just return that */
-		if(f->l->l == nil)
+		if(f->l->l == NULL)
 			return f->l;
-		else if(f->r->l == nil)
+		else if(f->r->l == NULL)
 			return f->r;
 
 		/* move the common node up, thow away one node */
@@ -596,16 +601,16 @@ _optimize(Filter *f)
 	case LAND:
 		/* are two children the same protocol? */
 		if(f->l->op != f->r->op || f->r->op != WORD
-		|| f->l->pr != f->r->pr || f->l->pr == nil)
+		|| f->l->pr != f->r->pr || f->l->pr == NULL)
 			break;	/* no optimization */
 
 		changed = 1;
 
 		/* constant folding */
 		/* if either child is childless, ignore it */
-		if(f->l->l == nil)
+		if(f->l->l == NULL)
 			return f->r;
-		else if(f->r->l == nil)
+		else if(f->r->l == NULL)
 			return f->l;
 
 		/* move the common node up, thow away one node */
@@ -657,7 +662,7 @@ findbogus(Filter *f)
 static void
 _compile(Filter *f, Proto *last)
 {
-	if(f == nil)
+	if(f == NULL)
 		return;
 
 	switch(f->op){
@@ -670,31 +675,31 @@ _compile(Filter *f, Proto *last)
 		_compile(f->r, last);
 		break;
 	case WORD:
-		if(last != nil){
-			if(last->compile == nil)
-				sysfatal("unknown %s subprotocol: %s", f->pr->name, f->s);
+		if(last != NULL){
+			if(last->compile == NULL)
+				error(1, 0, "unknown %s subprotocol: %s", f->pr->name, f->s);
 			(*last->compile)(f);
 		}
 		if(f->l)
 			_compile(f->l, f->pr);
 		break;
 	case '=':
-		if(last == nil)
-			sysfatal("internal error: compilewalk: badly formed tree");
+		if(last == NULL)
+			error(1, 0, "internal error: compilewalk: badly formed tree");
 		
-		if(last->compile == nil)
-			sysfatal("unknown %s field: %s", f->pr->name, f->s);
+		if(last->compile == NULL)
+			error(1, 0, "unknown %s field: %s", f->pr->name, f->s);
 		(*last->compile)(f);
 		break;
 	default:
-		sysfatal("internal error: compilewalk op: %d", f->op);
+		error(1, 0, "internal error: compilewalk op: %d", f->op);
 	}
 }
 
 Filter*
 compile(Filter *f)
 {
-	if(f == nil)
+	if(f == NULL)
 		return f;
 
 	/* fill in the missing header filters */
@@ -751,9 +756,9 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 	char *v;
 
 	if(f->op != '=')
-		sysfatal("internal error: compile_cmp %s: not a cmp", proto);
+		error(1, 0, "internal error: compile_cmp %s: not a cmp", proto);
 
-	for(; fld->name != nil; fld++){
+	for(; fld->name != NULL; fld++){
 		if(strcmp(f->l->s, fld->name) == 0){
 			f->op = WORD;
 			f->subop = fld->subop;
@@ -792,14 +797,14 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 				parseba(f->a, f->r->s);
 				break;
 			default:
-				sysfatal("internal error: compile_cmp %s: %d",
+				error(1, 0, "internal error: compile_cmp %s: %d",
 					proto, fld->ftype);
 			}
-			f->l = f->r = nil;
+			f->l = f->r = NULL;
 			return;
 		}
 	}
-	sysfatal("unknown %s field in: %s = %s", proto, f->l->s, f->r->s);
+	error(1, 0, "unknown %s field in: %s = %s", proto, f->l->s, f->r->s);
 }
 
 void
@@ -807,10 +812,10 @@ _pf(Filter *f)
 {
 	char *s;
 
-	if(f == nil)
+	if(f == NULL)
 		return;
 
-	s = nil;
+	s = NULL;
 	switch(f->op){
 	case '!':
 		fprint(2, "!");
@@ -818,7 +823,7 @@ _pf(Filter *f)
 		break;
 	case WORD:
 		fprint(2, "%s", f->s);
-		if(f->l != nil){
+		if(f->l != NULL){
 			fprint(2, "(");
 			_pf(f->l);
 			fprint(2, ")");
@@ -911,17 +916,17 @@ printhelp(char *name)
 	Field *f;
 	char fmt[40];
 	
-	if(name == nil){
+	if(name == NULL){
 		print("protocols:\n");
 		startmc();
-		for(l=protos; (pr=*l) != nil; l++)
+		for(l=protos; (pr=*l) != NULL; l++)
 			print("  %s\n", pr->name);
 		stopmc();
 		return;
 	}
 	
 	pr = findproto(name);
-	if(pr == nil){
+	if(pr == NULL){
 		print("unknown protocol %s\n", name);
 		return;
 	}
@@ -941,7 +946,7 @@ printhelp(char *name)
 		print("%s's subprotos:\n", pr->name);
 		startmc();
 		snprint(fmt, sizeof fmt, "  %s %%s\n", pr->valfmt);
-		for(m=pr->mux; m->name != nil; m++)
+		for(m=pr->mux; m->name != NULL; m++)
 			print(fmt, m->val, m->name);
 		stopmc();
 	}
@@ -954,7 +959,7 @@ void
 demux(Mux *mx, uint32_t val1, uint32_t val2, Msg *m, Proto *def)
 {
 	m->pr = def;
-	for(mx = mx; mx->name != nil; mx++){
+	for(mx = mx; mx->name != NULL; mx++){
 		if(val1 == mx->val || val2 == mx->val){
 			m->pr = mx->pr;
 			break;
@@ -975,5 +980,5 @@ defaultframer(int fd, uint8_t *pkt, int pktlen)
 /* this is gross but I can't deal with yacc nonsense just now. */
 void yyerror(void)
 {
-	sysfatal("yyerror");
+	error(1, 0, "yyerror");
 }

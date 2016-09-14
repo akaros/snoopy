@@ -7,9 +7,14 @@
  * in the LICENSE file.
  */
 
-#include <u.h>
-#include <libc.h>
-#include <ip.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -155,7 +160,7 @@ p_compile(Filter *f)
 		f->subop = Op;
 		return;
 	}
-	sysfatal("unknown icmp field or protocol: %s", f->s);
+	error(1, 0, "unknown icmp field or protocol: %s", f->s);
 }
 
 static int
@@ -202,7 +207,7 @@ opt_seprint(Msg *m)
 	while (pktsz > 0) {
 		otype = *a;
 		opt = icmp6opts[otype];
-		if(opt == nil){
+		if(opt == NULL){
 			sprint(optbuf, "0x%x", otype);
 			opt = optbuf;
 		}
@@ -305,7 +310,7 @@ p_seprint(Msg *m)
 		return -1;
 
 	tn = icmpmsg6[h->type];
-	if(tn == nil)
+	if(tn == NULL)
 		p = seprint(p, e, "t=%u c=%d ck=%4.4x", h->type,
 			h->code, (uint16_t)NetS(h->cksum));
 	else
@@ -372,14 +377,14 @@ p_seprint(Msg *m)
 
 	case RouterSolicit:
 		m->ps += 4;
-		m->pr = nil;
+		m->pr = NULL;
 		m->p = seprint(p, e, " unused=%1.1d ", NetL(a)!=0);
 		p = opt_seprint(m);
 		break;
 
 	case RouterAdvert:
 		m->ps += 12;
-		m->pr = nil;
+		m->pr = NULL;
 		m->p = seprint(p, e, " hoplim=%3.3d mflag=%1.1d oflag=%1.1d "
 			"unused=%1.1d routerlt=%8.8d reachtime=%d rxmtimer=%d",
 			(int) *a,
@@ -394,14 +399,14 @@ p_seprint(Msg *m)
 
 	case NbrSolicit:
 		m->ps += 20;
-		m->pr = nil;
+		m->pr = NULL;
 		m->p = seprint(p, e, " unused=%1.1d targ %I", NetL(a) != 0, a+4);
 		p = opt_seprint(m);
 		break;
 
 	case NbrAdvert:
 		m->ps += 20;
-		m->pr = nil;
+		m->pr = NULL;
 		m->p = seprint(p, e, " rflag=%1.1d sflag=%1.1d oflag=%1.1d targ=%I",
 			(*a & (1 << 7)) != 0,
 			(*a & (1 << 6)) != 0,
@@ -423,7 +428,7 @@ p_seprint(Msg *m)
 		m->ps += 12;
 		p = seprint(p, e, " orig=%u rcv=%x xmt=%x",
 			NetL(h->data), NetL(h->data+4), NetL(h->data+8));
-		m->pr = nil;
+		m->pr = NULL;
 		break;
 
 	case InfoRequest:
