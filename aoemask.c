@@ -7,12 +7,6 @@
  * in the LICENSE file.
  */
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <unistd.h>
 
 #include "ip.h"
 #include "dat.h"
@@ -38,13 +32,13 @@ static Field p_fields[] =
 	{ "cmd",	Fnum,	Ocmd,	"command", },
 	{ "err",	Fnum,	Oerr,	"error", },
 	{ "cnt",	Fnum,	Ocnt,	"count", },
-	nil
+	NULL
 };
 
 static Mux p_mux[] = {
 	{ "aoemd",	0 },
 	{ "aoemd",	1 },
-	nil
+	NULL
 };
 
 static void

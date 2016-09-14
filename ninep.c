@@ -7,12 +7,6 @@
  * in the LICENSE file.
  */
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <unistd.h>
 
 #include "ip.h"
 #include <fcall.h>

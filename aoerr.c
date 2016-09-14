@@ -7,12 +7,6 @@
  * in the LICENSE file.
  */
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <unistd.h>
 
 #include "ip.h"
 #include "dat.h"
@@ -35,7 +29,7 @@ static Field p_fields[] = {
 	{"cmd",	Fnum,	Ocmd,	"command",	},
 	{"nea",	Fnum,	Onea,	"ea count",	},
 	{"ea",	Fnum,	Onea,	"ethernet addr", },
-	nil
+	NULL
 };
 
 static void
