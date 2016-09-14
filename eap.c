@@ -141,7 +141,7 @@ op(int i)
 	case Fail:
 		return "Fail";
 	default:
-		sprint(x, "%1d", i);
+		sprintf(x, "%1d", i);
 		return x;
 	}
 }
@@ -155,7 +155,7 @@ subop(uint8_t val)
 	if(p != NULL)
 		return p;
 	else {
-		sprint(x, "%1d", val);
+		sprintf(x, "%1d", val);
 		return x;
 	}
 }

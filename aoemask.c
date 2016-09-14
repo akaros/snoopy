@@ -32,13 +32,13 @@ static Field p_fields[] =
 	{ "cmd",	Fnum,	Ocmd,	"command", },
 	{ "err",	Fnum,	Oerr,	"error", },
 	{ "cnt",	Fnum,	Ocnt,	"count", },
-	NULL
+	{},
 };
 
 static Mux p_mux[] = {
 	{ "aoemd",	0 },
 	{ "aoemd",	1 },
-	NULL
+	{},
 };
 
 static void
@@ -108,10 +108,10 @@ p_seprint(Msg *m)
 	demux(p_mux, h->cmd, h->cmd, m, &dump);
 
 	s = "unk";
-	if(h->cmd < nelem(ctab))
+	if(h->cmd < ARRAY_SIZE(ctab))
 		s = ctab[h->cmd];
 	t = "unk";
-	if(h->err < nelem(etab))
+	if(h->err < ARRAY_SIZE(etab))
 		s = etab[h->err];
 	m->p = seprint(m->p, m->e, "cmd=%d %s err=%d %s cnt=%d\n",
 		h->cmd, s, h->err, t, h->cnt);

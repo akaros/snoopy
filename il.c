@@ -113,7 +113,7 @@ pkttype(int t)
 	static char b[10];
 	
 	if(t > 6){
-		sprint(b, "%d", t);
+		sprintf(b, "%d", t);
 		return b;
 	}
 	return pktnames[t];

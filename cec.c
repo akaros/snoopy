@@ -98,17 +98,22 @@ p_seprint(Msg *m)
 
 	m->pr = NULL;
 
-	if(h->type < nelem(ttab))
+	if(h->type < ARRAY_SIZE(ttab))
 		s = ttab[h->type];
 	else{
-		snprint(buf, sizeof buf, "%d", h->type);
+		snprintf(buf, sizeof buf, "%d", h->type);
 		s = buf;
 	}
 
 	p = (char*)m->ps;
+	/* no UTF yet.
 	m->p = seprint(m->p, m->e, "type=%s conn=%d seq=%d len=%d %.*s",
 		s, h->conn, h->seq, h->len,
 		(int)utfnlen(p, h->len), p);
+	*/
+	m->p = seprint(m->p, m->e, "type=%s conn=%d seq=%d len=%d %s",
+		s, h->conn, h->seq, h->len,
+	               p);
 	return 0;
 }
 

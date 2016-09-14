@@ -133,7 +133,7 @@ op(int i)
 	case Bootreply:
 		return "Rep";
 	default:
-		sprint(x, "%d", i);
+		sprintf(x, "%d", i);
 		return x;
 	}
 }

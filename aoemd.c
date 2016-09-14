@@ -28,7 +28,7 @@ enum {
 static Field p_fields[] = {
 	{"cmd",	Fnum,	Ocmd,	"command",	},
 	{"ea",	Fnum,	Oea,	"ethernet addr", },
-	NULL
+	{}
 };
 
 static void
@@ -87,7 +87,7 @@ p_seprint(Msg *m)
 	m->pr = NULL;
 
 	s = "unk";
-	if(h->cmd < nelem(ctab))
+	if(h->cmd < ARRAY_SIZE(ctab))
 		s = ctab[h->cmd];
 	m->p = seprint(m->p, m->e, "cmd=%d%s ea=%E\n", h->cmd, s, h->ea);
 	return 0;

@@ -163,7 +163,7 @@ p_framer(int fd, uint8_t *pkt, int pktlen)
 
 		/* accept if this is a good packet */
 		if(fcs != PPP_goodfcs)
-			print("bad frame %ld %2.2x %2.2x!\n", to-pkt, pkt[0], pkt[1]);
+			printf("bad frame %ld %2.2x %2.2x!\n", to-pkt, pkt[0], pkt[1]);
 		else
 			return to-pkt;
 	}

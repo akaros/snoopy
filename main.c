@@ -911,37 +911,37 @@ printhelp(char *name)
 	char fmt[40];
 	
 	if(name == NULL){
-		print("protocols:\n");
+		printf("protocols:\n");
 		startmc();
 		for(l=protos; (pr=*l) != NULL; l++)
-			print("  %s\n", pr->name);
+			printf("  %s\n", pr->name);
 		stopmc();
 		return;
 	}
 	
 	pr = findproto(name);
 	if(pr == NULL){
-		print("unknown protocol %s\n", name);
+		printf("unknown protocol %s\n", name);
 		return;
 	}
 	
 	if(pr->field){
-		print("%s's filter attributes:\n", pr->name);
+		printf("%s's filter attributes:\n", pr->name);
 		len = 0;
 		for(f=pr->field; f->name; f++)
 			if(len < strlen(f->name))
 				len = strlen(f->name);
 		startmc();
 		for(f=pr->field; f->name; f++)
-			print("  %-*s - %s\n", len, f->name, f->help);
+			printf("  %-*s - %s\n", len, f->name, f->help);
 		stopmc();
 	}
 	if(pr->mux){
-		print("%s's subprotos:\n", pr->name);
+		printf("%s's subprotos:\n", pr->name);
 		startmc();
 		snprint(fmt, sizeof fmt, "  %s %%s\n", pr->valfmt);
 		for(m=pr->mux; m->name != NULL; m++)
-			print(fmt, m->val, m->name);
+			printf(fmt, m->val, m->name);
 		stopmc();
 	}
 }

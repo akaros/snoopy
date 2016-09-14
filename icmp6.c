@@ -202,7 +202,7 @@ opt_seprint(Msg *m)
 		otype = *a;
 		opt = icmp6opts[otype];
 		if(opt == NULL){
-			sprint(optbuf, "0x%x", otype);
+			sprintf(optbuf, "0x%x", otype);
 			opt = optbuf;
 		}
 		osz = (*(a+1)) * 8;
@@ -327,8 +327,8 @@ p_seprint(Msg *m)
 	case UnreachableV6:
 		m->ps += 4;
 		m->pr = &ip6;
-		if (h->code >= nelem(unreachcode))
-			i = nelem(unreachcode)-1;
+		if (h->code >= ARRAY_SIZE(unreachcode))
+			i = ARRAY_SIZE(unreachcode)-1;
 		else
 			i = h->code;
 		p = seprint(p, e, " code=%s unused=%1.1d ", unreachcode[i],
@@ -344,8 +344,8 @@ p_seprint(Msg *m)
 	case TimeExceedV6:
 		m->ps += 4;
 		m->pr = &ip6;
-		if (h->code >= nelem(timexcode))
-			i = nelem(timexcode)-1;
+		if (h->code >= ARRAY_SIZE(timexcode))
+			i = ARRAY_SIZE(timexcode)-1;
 		else
 			i = h->code;
 		p = seprint(p, e, " code=%s unused=%1.1d ", timexcode[i],
@@ -355,8 +355,8 @@ p_seprint(Msg *m)
 	case ParamProblemV6:
 		m->ps += 4;
 		m->pr = &ip6;
-		if (h->code > nelem(parpcode))
-			i = nelem(parpcode)-1;
+		if (h->code > ARRAY_SIZE(parpcode))
+			i = ARRAY_SIZE(parpcode)-1;
 		else
 			i = h->code;
 		p = seprint(p, e, " code=%s ptr=%2.2x", parpcode[i], h->data[0]);

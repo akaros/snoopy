@@ -57,7 +57,7 @@ ospfpkttype(int x)
 
 	if(x > 0 && x <= OSPFlsack)
 		return ospftype[x];
-	sprint(type, "type %d", x);
+	sprintf(type, "type %d", x);
 	return type;
 }
 
@@ -70,15 +70,15 @@ ospfauth(Ospfpkt *ospf)
 	case 0:
 		return "no authentication";
 	case 1:
-		sprint(auth, "password(%8.8x %8.8x)", NetL(ospf->auth),	
+		sprintf(auth, "password(%8.8x %8.8x)", NetL(ospf->auth),	
 			NetL(ospf->auth+4));
 		break;
 	case 2:
-		sprint(auth, "crypto(plen %d id %d dlen %d)", NetS(ospf->auth),	
+		sprintf(auth, "crypto(plen %d id %d dlen %d)", NetS(ospf->auth),	
 			ospf->auth[2], ospf->auth[3]);
 		break;
 	default:
-		sprint(auth, "auth%d(%8.8x %8.8x)", NetS(ospf->autype), NetL(ospf->auth),	
+		sprintf(auth, "auth%d(%8.8x %8.8x)", NetS(ospf->autype), NetL(ospf->auth),	
 			NetL(ospf->auth+4));
 	}
 	return auth;
@@ -133,7 +133,7 @@ lsapkttype(int x)
 
 	if(x > 0 && x <= LSAASext)
 		return lsatype[x];
-	sprint(type, "type %d", x);
+	sprintf(type, "type %d", x);
 	return type;
 }
 

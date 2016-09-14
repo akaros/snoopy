@@ -83,7 +83,7 @@ rrtypestr(int t)
 {
 	static char buf[20];
 
-	if(t >= 0 && t < nelem(rrtname) && rrtname[t])
+	if(t >= 0 && t < ARRAY_SIZE(rrtname) && rrtname[t])
 		return rrtname[t];
 	snprint(buf, sizeof buf, "type%d", t);
 	return buf;

@@ -79,10 +79,10 @@ int
 parthdrlen(uint16_t flags)
 {
 	return 4 + 
-		(flags&GRE_chksum || flags&GRE_routing) ? 4 : 0 +
-		flags&GRE_key ? 4 : 0 +
-		flags&GRE_seq ? 4 : 0 +
-		flags&GRE_ack ? 4 : 0;
+		((flags&GRE_chksum || flags&GRE_routing) ? 4 : 0) +
+		(flags&GRE_key ? 4 : 0) +
+		(flags&GRE_seq ? 4 : 0) +
+		(flags&GRE_ack ? 4 : 0);
 }
 
 int

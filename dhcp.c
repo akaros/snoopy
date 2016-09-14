@@ -451,7 +451,7 @@ p_seprint(Msg *m)
 		case OBend:
 			goto out;
 		default:
-			snprint(msg, sizeof msg, " T%u", code);
+			snprintf(msg, sizeof msg, " T%u", code);
 			p = phex(p, e, msg, o, n);
 			break;
 		}

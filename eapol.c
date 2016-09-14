@@ -99,7 +99,7 @@ op(int i)
 	case AsfAlert:
 		return "AsfAlert";
 	default:
-		sprint(x, "%1d", i);
+		sprintf(x, "%1d", i);
 		return x;
 	}
 }

@@ -29,7 +29,7 @@ static Field p_fields[] = {
 	{"cmd",	Fnum,	Ocmd,	"command",	},
 	{"nea",	Fnum,	Onea,	"ea count",	},
 	{"ea",	Fnum,	Onea,	"ethernet addr", },
-	NULL
+	{}
 };
 
 static void
@@ -96,7 +96,7 @@ p_seprint(Msg *m)
 	m->pr = NULL;
 
 	s = "unk";
-	if(h->cmd < nelem(ctab))
+	if(h->cmd < ARRAY_SIZE(ctab))
 		s = ctab[h->cmd];
 	m->p = seprint(m->p, m->e, "cmd=%d %s nea=%d", h->cmd, s, h->nea);
 	for(i = 0;; i++){

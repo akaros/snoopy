@@ -94,7 +94,7 @@ op(int i)
 	case DescTpRC4:
 		return "RC4KeyDesc";
 	default:
-		sprint(x, "%1d", i);
+		sprintf(x, "%1d", i);
 		return x;
 	}
 }
