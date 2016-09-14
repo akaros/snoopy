@@ -12,10 +12,9 @@
  */
 
 #include "ip.h"
-#include <bio.h>
-#include <fcall.h>
-#include <libsec.h>
-#include <ndb.h>
+//#include <fcall.h>
+//#include <libsec.h>
+//#include <ndb.h>
 #include "dat.h"
 #include "protos.h"
 #include "y.tab.h"
@@ -74,13 +73,14 @@ main(int argc, char **argv)
 	int fd, cfd;
 	int n;
 
-	Binit(&out, 1, OWRITE);
 
+/*
 	fmtinstall('E', eipfmt);
 	fmtinstall('V', eipfmt);
 	fmtinstall('I', eipfmt);
 	fmtinstall('H', encodefmt);
 	fmtinstall('F', fcallfmt);
+*/
 
 	pkt = malloc(Pktlen+16);
 	pkt += 16;

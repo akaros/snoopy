@@ -24,7 +24,6 @@ arp.c \
 bootp.c \
 cec.c \
 dhcp.c \
-dns.c \
 dump.c \
 eap.c \
 eap_identity.c \
@@ -39,7 +38,6 @@ il.c \
 ip6.c \
 ip.c \
 main.c \
-ninep.c \
 ospf.c \
 ppp.c \
 ppp_ccp.c \
@@ -57,6 +55,10 @@ tcp.c \
 ttls.c \
 udp.c \
 util.c
+
+NO=\
+dns.c \
+ninep.c \
 
 all: $(ALL)
 	scp $(ALL) skynet:
