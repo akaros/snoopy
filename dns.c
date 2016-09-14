@@ -82,7 +82,7 @@ char *rrtname[] =
 static char*
 rrtypestr(int t)
 {
-	char buf[20];
+	static char buf[20];
 
 	if(t >= 0 && t < nelem(rrtname) && rrtname[t])
 		return rrtname[t];
@@ -101,7 +101,7 @@ fmtrr(Msg *m, RR **rrp, int quest)
 		return;
 	*rrp = rr->next;
 
-	m->p = seprint(m->p, m->e, "%s name=%s ttl=%lud",
+	m->p = seprint(m->p, m->e, "%s name=%s ttl=%lu",
 		rrtypestr(rr->type),
 		rr->owner->name, rr->ttl);
 	if(!quest)
@@ -128,7 +128,7 @@ fmtrr(Msg *m, RR **rrp, int quest)
 		m->p = seprint(m->p, m->e, " mb=%s", rr->mb->name);
 		break;
 	case Tmx:
-		m->p = seprint(m->p, m->e, " pref=%lud", rr->pref);
+		m->p = seprint(m->p, m->e, " pref=%lu", rr->pref);
 		m->p = seprint(m->p, m->e, " host=%s", rr->host->name);
 		break;
 	case Ta:
@@ -141,11 +141,11 @@ fmtrr(Msg *m, RR **rrp, int quest)
 	case Tsoa:
 		m->p = seprint(m->p, m->e, " host=%s", rr->host->name);
 		m->p = seprint(m->p, m->e, " rmb=%s", rr->rmb->name);
-		m->p = seprint(m->p, m->e, " soa.serial=%lud", rr->soa->serial);
-		m->p = seprint(m->p, m->e, " soa.refresh=%lud", rr->soa->refresh);
-		m->p = seprint(m->p, m->e, " soa.retry=%lud", rr->soa->retry);
-		m->p = seprint(m->p, m->e, " soa.expire=%lud", rr->soa->expire);
-		m->p = seprint(m->p, m->e, " soa.minttl=%lud", rr->soa->minttl);
+		m->p = seprint(m->p, m->e, " soa.serial=%lu", rr->soa->serial);
+		m->p = seprint(m->p, m->e, " soa.refresh=%lu", rr->soa->refresh);
+		m->p = seprint(m->p, m->e, " soa.retry=%lu", rr->soa->retry);
+		m->p = seprint(m->p, m->e, " soa.expire=%lu", rr->soa->expire);
+		m->p = seprint(m->p, m->e, " soa.minttl=%lu", rr->soa->minttl);
 		break;
 	case Ttxt:
 		for(t=rr->txt; t; t=t->next)
@@ -153,7 +153,7 @@ fmtrr(Msg *m, RR **rrp, int quest)
 		break;
 	case Tnull:
 		m->p = seprint(m->p, m->e, " null=%.*H",
-			rr->null->dlen, rr->null->data);
+			rr->null->Block.dlen, rr->null->Block.data);
 		break;
 	case Trp:
 		m->p = seprint(m->p, m->e, " rmb=%s", rr->rmb->name);
@@ -162,19 +162,19 @@ fmtrr(Msg *m, RR **rrp, int quest)
 	case Tkey:
 		m->p = seprint(m->p, m->e, " flags=%d proto=%d alg=%d data=%.*H",
 			rr->key->flags, rr->key->proto, rr->key->alg,
-			rr->key->dlen, rr->key->data);
+			rr->key->Block.dlen, rr->key->Block.data);
 		break;
 	case Tsig:
 		m->p = seprint(m->p, m->e,
-" type=%d alg=%d labels=%d ttl=%lud exp=%lud incep=%lud tag=%d signer=%s data=%.*H",
-			rr->sig->type, rr->sig->alg, rr->sig->labels,
-			rr->sig->ttl, rr->sig->exp, rr->sig->incep, rr->sig->tag,
-			rr->sig->signer->name, rr->sig->dlen, rr->sig->data);
+" type=%d alg=%d labels=%d ttl=%lu exp=%lu incep=%lu tag=%d signer=%s data=%.*H",
+			rr->sig->Cert.type, rr->sig->Cert.alg, rr->sig->labels,
+			rr->sig->ttl, rr->sig->exp, rr->sig->incep, rr->sig->Cert.tag,
+			rr->sig->signer->name, rr->sig->Cert.Block.dlen, rr->sig->Cert.Block.data);
 		break;
 	case Tcert:
 		m->p = seprint(m->p, m->e, " type=%d tag=%d alg=%d data=%.*H",
 			rr->cert->type, rr->cert->tag, rr->cert->alg,
-			rr->cert->dlen, rr->cert->data);
+			rr->cert->Block.dlen, rr->cert->Block.data);
 		break;
 	}
 	rrfree(rr);
@@ -195,7 +195,7 @@ p_seprint(Msg *m)
 		m->p = seprint(m->p, m->e, "error: %s", e);
 		return 0;
 	}
-	m->p = seprint(m->p, m->e, "id=%d flags=%#ux", dm.id, dm.flags);
+	m->p = seprint(m->p, m->e, "id=%d flags=%#x", dm.id, dm.flags);
 	donext(m);
 	return 0;
 }
@@ -334,7 +334,7 @@ estrdup(char *s)
 DN *alldn;
 
 DN*
-dnlookup(char *name, int class, int)
+dnlookup(char *name, int class, int _)
 {
 	DN *dn;
 
@@ -493,22 +493,22 @@ rrfree(RR *rp)
 		free(rp->srv);
 		break;
 	case Tkey:
-		free(rp->key->data);
+		free(rp->key->Block.data);
 		memset(rp->key, 0, sizeof *rp->key);	/* cause trouble */
 		free(rp->key);
 		break;
 	case Tcert:
-		free(rp->cert->data);
+		free(rp->cert->Block.data);
 		memset(rp->cert, 0, sizeof *rp->cert);	/* cause trouble */
 		free(rp->cert);
 		break;
 	case Tsig:
-		free(rp->sig->data);
+		free(rp->sig->Cert.Block.data);
 		memset(rp->sig, 0, sizeof *rp->sig);	/* cause trouble */
 		free(rp->sig);
 		break;
 	case Tnull:
-		free(rp->null->data);
+		free(rp->null->Block.data);
 		memset(rp->null, 0, sizeof *rp->null);	/* cause trouble */
 		free(rp->null);
 		break;

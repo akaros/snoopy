@@ -71,7 +71,7 @@ static Field p_fields[] =
 	{0}
 };
 
-#define plan9opt ((ulong)(('p'<<24) | ('9'<<16) | (' '<<8) | ' '))
+#define plan9opt ((uint32_t)(('p'<<24) | ('9'<<16) | (' '<<8) | ' '))
 #define genericopt (0x63825363UL)
 
 static Mux p_mux[] =
@@ -161,7 +161,7 @@ p_seprint(Msg *m)
 		demux(p_mux, x, x, m, &dump);
 	}
 
-	m->p = seprint(m->p, m->e, "t=%s ht=%d hl=%d hp=%d xid=%ux sec=%d fl=%4.4ux ca=%V ya=%V sa=%V ga=%V cha=%E magic=%lux",
+	m->p = seprint(m->p, m->e, "t=%s ht=%d hl=%d hp=%d xid=%x sec=%d fl=%4.4x ca=%V ya=%V sa=%V ga=%V cha=%E magic=%lx",
 		op(h->op), h->htype, h->hlen, h->hops,
 		NetL(h->xid), NetS(h->secs), NetS(h->flags),
 		h->ciaddr, h->yiaddr, h->siaddr, h->giaddr, h->chaddr,

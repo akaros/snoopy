@@ -44,7 +44,7 @@ static Field p_fields[] =
 	{0}
 };
 
-#define ANYPORT ~0UL
+#define ANYPORT ~0
 
 static Mux p_mux[] =
 {
@@ -123,7 +123,7 @@ p_seprint(Msg *m)
 	demux(p_mux, sport, dport, m, defproto);
 	defproto = &dump;
 
-	m->p = seprint(m->p, m->e, "s=%d d=%d ck=%4.4ux ln=%4d",
+	m->p = seprint(m->p, m->e, "s=%d d=%d ck=%4.4x ln=%4d",
 			NetS(h->sport), dport,
 			NetS(h->cksum), NetS(h->len));
 	return 0;
@@ -136,7 +136,7 @@ Proto udp =
 	p_filter,
 	p_seprint,
 	p_mux,
-	"%lud",
+	"%lu",
 	p_fields,
 	defaultframer,
 };

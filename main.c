@@ -70,7 +70,7 @@ usage(void)
 void
 main(int argc, char **argv)
 {
-	uchar *pkt;
+	uint8_t *pkt;
 	char *buf, *file, *p, *e;
 	int fd, cfd;
 	int n;
@@ -354,7 +354,7 @@ printpkt(char *p, char *e, uint8_t *ps, uint8_t *pe)
 	uint32_t dt;
 
 	dt = (pkttime-starttime)/1000000LL;
-	m.p = seprint(p, e, "%6.6uld ms ", dt);
+	m.p = seprint(p, e, "%6.6lu ms ", dt);
 	m.ps = ps;
 	m.pe = pe;
 	m.e = e;
@@ -970,4 +970,10 @@ int
 defaultframer(int fd, uint8_t *pkt, int pktlen)
 {
 	return read(fd, pkt, pktlen);
+}
+
+/* this is gross but I can't deal with yacc nonsense just now. */
+void yyerror(void)
+{
+	sysfatal("yyerror");
 }

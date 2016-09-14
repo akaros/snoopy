@@ -7,9 +7,6 @@
  * in the LICENSE file.
  */
 
-#pragma	src	"/sys/src/libip"
-#pragma	lib	"libip.a"
-
 enum 
 {
 	IPaddrlen=	16,
@@ -167,7 +164,7 @@ struct Udphdr
 
 uint8_t*	defmask(uint8_t*);
 void	maskip(uint8_t*, uint8_t*, uint8_t*);
-int	eipfmt(Fmt*);
+//int	eipfmt(Fmt*);
 int	isv4(uint8_t*);
 int64_t	parseip(uint8_t*, char*);
 int64_t	parseipmask(uint8_t*, char*);
@@ -205,7 +202,3 @@ extern uint8_t IPallbits[IPaddrlen];
 
 #define CLASS(p) ((*(uint8_t*)(p))>>6)
 
-#pragma	varargck	type	"I"	uchar*
-#pragma	varargck	type	"V"	uchar*
-#pragma	varargck	type	"E"	uchar*
-#pragma	varargck	type	"M"	uchar*
