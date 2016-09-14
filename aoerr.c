@@ -45,7 +45,7 @@ p_compile(Filter *f)
 		compile_cmp(aoerr.name, f, p_fields);
 		return;
 	}
-	error(1, 0, "unknown aoerr field: %s", f->s);
+	sysfatal( "unknown aoerr field: %s", f->s);
 }
 
 static int
@@ -127,8 +127,8 @@ Proto aoerr = {
 	p_compile,
 	p_filter,
 	p_seprint,
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_fields,
 	defaultframer,
 };

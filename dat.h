@@ -114,3 +114,6 @@ extern int Cflag;
 typedef Filter *Filterptr;
 #define YYSTYPE Filterptr
 extern Filter *filter;
+
+char *seprint(char *buf, char *end, const char *fmt, ...);
+void sysfatal(const char *fmt, ...);

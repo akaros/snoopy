@@ -46,11 +46,11 @@ p_seprint(Msg *m)
 Proto ninep =
 {
 	"ninep",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprint,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };

@@ -44,7 +44,7 @@ p_compile(Filter *f)
 		compile_cmp(aoemd.name, f, p_fields);
 		return;
 	}
-	error(1, 0, "unknown aoemd field: %s", f->s);
+	sysfatal( "unknown aoemd field: %s", f->s);
 }
 
 static int
@@ -104,8 +104,8 @@ Proto aoemd = {
 	p_compile,
 	p_filter,
 	p_seprint,
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_fields,
 	defaultframer,
 };

@@ -161,7 +161,7 @@ p_compile(Filter *f)
 			return;
 		}
 
-	error(1, 0, "unknown ppp field or protocol: %s", f->s);
+	sysfatal( "unknown ppp field or protocol: %s", f->s);
 }
 
 static int
@@ -584,7 +584,7 @@ Proto ppp =
 	p_seprint,
 	p_mux,
 	"%#.4lux",
-	nil,
+	NULL,
 	defaultframer,
 };
 
@@ -594,9 +594,9 @@ Proto ppp_ipcp =
 	p_compile,
 	p_filter,
 	p_seprintipcp,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
@@ -606,9 +606,9 @@ Proto ppp_lcp =
 	p_compile,
 	p_filter,
 	p_seprintlcp,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
@@ -618,9 +618,9 @@ Proto ppp_ccp =
 	p_compile,
 	p_filter,
 	p_seprintccp,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
@@ -630,9 +630,9 @@ Proto ppp_chap =
 	p_compile,
 	p_filter,
 	p_seprintchap,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
@@ -642,8 +642,8 @@ Proto ppp_comp =
 	p_compile,
 	p_filter,
 	p_seprintcomp,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };

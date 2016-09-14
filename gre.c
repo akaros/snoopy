@@ -158,7 +158,7 @@ p_compile(Filter *f)
 			f->subop = Oproto;
 			return;
 		}
-	error(1, 0, "unknown gre field or protocol: %s", f->s);
+	sysfatal( "unknown gre field or protocol: %s", f->s);
 }
 
 static int

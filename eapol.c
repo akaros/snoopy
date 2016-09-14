@@ -65,7 +65,7 @@ p_compile(Filter *f)
 			f->subop = Ot;
 			return;
 		}
-	error(1, 0, "unknown eapol field or type: %s", f->s);
+	sysfatal( "unknown eapol field or type: %s", f->s);
 }
 
 static int
@@ -147,6 +147,6 @@ Proto eapol =
 	p_seprint,
 	p_mux,
 	"%lu",
-	nil,
+	NULL,
 	defaultframer,
 };

@@ -66,7 +66,7 @@ p_compile(Filter *f)
 		compile_cmp(arp.name, f, p_fields);
 		return;
 	}
-	error(1, 0, "unknown arp field: %s", f->s);
+	sysfatal( "unknown arp field: %s", f->s);
 }
 
 static int
@@ -125,8 +125,8 @@ Proto arp =
 	p_compile,
 	p_filter,
 	p_seprint,
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_fields,
 	defaultframer,
 };
@@ -137,8 +137,8 @@ Proto rarp =
 	p_compile,
 	p_filter,
 	p_seprint,
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_fields,
 	defaultframer,
 };

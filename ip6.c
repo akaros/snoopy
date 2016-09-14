@@ -171,7 +171,7 @@ p_compile(Filter *f)
 			f->subop = Ot;
 			return;
 		}
-	error(1, 0, "unknown ip6 field or protocol: %s", f->s);
+	sysfatal( "unknown ip6 field or protocol: %s", f->s);
 }
 
 static int

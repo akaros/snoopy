@@ -89,10 +89,10 @@ Proto dump =
 {
 	"dump",
 	p_compile,
-	nil,
+	NULL,
 	p_seprint,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };

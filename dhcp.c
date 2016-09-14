@@ -473,11 +473,11 @@ out:
 Proto dhcp =
 {
 	"dhcp",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprint,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };

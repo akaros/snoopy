@@ -96,7 +96,7 @@ p_compile(Filter *f)
 			f->subop = Ot;
 			return;
 		}
-	error(1, 0, "unknown eap field or type: %s", f->s);
+	sysfatal( "unknown eap field or type: %s", f->s);
 }
 
 static int
@@ -244,7 +244,7 @@ Proto eap =
 	p_seprint,
 	p_mux,
 	"%lu",
-	nil,
+	NULL,
 	defaultframer,
 };
 
@@ -254,8 +254,8 @@ Proto eap_identity =
 	p_compile,
 	p_filter,
 	p_seprintidentity,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };

@@ -63,7 +63,7 @@ p_compile(Filter *f)
 			f->subop = Ocmd;
 			return;
 		}
-	error(1, 0, "unknown aoemask field: %s", f->s);
+	sysfatal( "unknown aoemask field: %s", f->s);
 }
 
 static int

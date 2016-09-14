@@ -55,7 +55,8 @@ rtcp.c \
 rtp.c \
 tcp.c \
 ttls.c \
-udp.c
+udp.c \
+util.c
 
 all: $(ALL)
 	scp $(ALL) skynet:
@@ -66,7 +67,7 @@ install: all
 
 # compilers are fast. Just rebuild it each time.
 snoopy: $(FILES)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $< $(LDLIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o snoopy $(FILES) $(LDLIBS)
 clean:
 	rm -f $(ALL) *.o
 

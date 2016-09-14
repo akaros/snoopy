@@ -60,7 +60,7 @@ p_compile(Filter *f)
 		compile_cmp(aoeata.name, f, p_fields);
 		return;
 	}
-	error(1, 0, "unknown aoeata field: %s", f->s);
+	sysfatal( "unknown aoeata field: %s", f->s);
 }
 
 uint64_t

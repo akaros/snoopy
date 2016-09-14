@@ -71,7 +71,7 @@ p_compilesess(Filter *f)
 			return;
 		}
 */
-	error(1, 0, "unknown pppoe field or protocol: %s", f->s);
+	sysfatal( "unknown pppoe field or protocol: %s", f->s);
 }
 static void
 p_compiledisc(Filter *f)
@@ -91,7 +91,7 @@ p_compiledisc(Filter *f)
 			return;
 		}
 */
-	error(1, 0, "unknown pppoe field or protocol: %s", f->s);
+	sysfatal( "unknown pppoe field or protocol: %s", f->s);
 }
 
 static int

@@ -175,7 +175,7 @@ p_compile(Filter *f)
 			f->subop = Ot;
 			return;
 		}
-	error(1, 0, "unknown ip field or protocol: %s", f->s);
+	sysfatal( "unknown ip field or protocol: %s", f->s);
 }
 
 static int

@@ -52,7 +52,7 @@ p_compile(Filter *f)
 		compile_cmp(aoe.name, f, p_fields);
 		return;
 	}
-	error(1, 0, "unknown aoe field: %s", f->s);
+	sysfatal( "unknown aoe field: %s", f->s);
 }
 
 static int
@@ -124,8 +124,8 @@ Proto cec =
 	p_compile,
 	p_filter,
 	p_seprint,
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_fields,
 	defaultframer,
 };

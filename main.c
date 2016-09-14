@@ -226,7 +226,7 @@ newfilter(void)
 
 	f = mallocz(sizeof(*f), 1);
 	if(f == NULL)
-		error(1, 0, "newfilter: %r");
+		sysfatal( "newfilter: %r");
 	return f;
 }
 
@@ -264,7 +264,7 @@ _filterpkt(Filter *f, Msg *m)
 		m->pr = f->pr;
 		return _filterpkt(f->l, m);
 	}
-	error(1, 0, "internal error: filterpkt op: %d", f->op);
+	sysfatal( "internal error: filterpkt op: %d", f->op);
 	return 0;
 }
 int
@@ -379,7 +379,7 @@ printpkt(char *p, char *e, uint8_t *ps, uint8_t *pe)
 	*m.p++ = '\n';
 
 	if(write(1, p, m.p - p) < 0)
-		error(1, 0, "stdout: %r");
+		sysfatal( "stdout: %r");
 }
 
 Proto **xprotos;
@@ -545,7 +545,7 @@ complete(Filter *f, Proto *last)
 			f->l = complete(f->l, pr);
 			f = fillin(f, last);
 			if(f == NULL)
-				error(1, 0, "internal error: can't get to %s", pr->name);
+				sysfatal( "internal error: can't get to %s", pr->name);
 		}
 		break;
 	}
@@ -677,7 +677,7 @@ _compile(Filter *f, Proto *last)
 	case WORD:
 		if(last != NULL){
 			if(last->compile == NULL)
-				error(1, 0, "unknown %s subprotocol: %s", f->pr->name, f->s);
+				sysfatal( "unknown %s subprotocol: %s", f->pr->name, f->s);
 			(*last->compile)(f);
 		}
 		if(f->l)
@@ -685,14 +685,14 @@ _compile(Filter *f, Proto *last)
 		break;
 	case '=':
 		if(last == NULL)
-			error(1, 0, "internal error: compilewalk: badly formed tree");
+			sysfatal( "internal error: compilewalk: badly formed tree");
 		
 		if(last->compile == NULL)
-			error(1, 0, "unknown %s field: %s", f->pr->name, f->s);
+			sysfatal( "unknown %s field: %s", f->pr->name, f->s);
 		(*last->compile)(f);
 		break;
 	default:
-		error(1, 0, "internal error: compilewalk op: %d", f->op);
+		sysfatal( "internal error: compilewalk op: %d", f->op);
 	}
 }
 
@@ -756,7 +756,7 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 	char *v;
 
 	if(f->op != '=')
-		error(1, 0, "internal error: compile_cmp %s: not a cmp", proto);
+		sysfatal( "internal error: compile_cmp %s: not a cmp", proto);
 
 	for(; fld->name != NULL; fld++){
 		if(strcmp(f->l->s, fld->name) == 0){
@@ -767,7 +767,7 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 				f->ulv = atoi(f->r->s);
 				break;
 			case Fether:
-				v = csgetvalue(nil, "sys", (char*)f->r->s,
+				v = csgetvalue(NULL, "sys", (char*)f->r->s,
 					"ether", 0);
 				if(v){
 					parseether(f->a, v);
@@ -776,7 +776,7 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 					parseether(f->a, f->r->s);
 				break;
 			case Fv4ip:
-				v = csgetvalue(nil, "sys", (char*)f->r->s,
+				v = csgetvalue(NULL, "sys", (char*)f->r->s,
 					"ip", 0);
 				if(v){
 					f->ulv = parseip(x, v);
@@ -785,7 +785,7 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 					f->ulv = parseip(x, f->r->s);
 				break;
 			case Fv6ip:
-				v = csgetvalue(nil, "sys", (char*)f->r->s,
+				v = csgetvalue(NULL, "sys", (char*)f->r->s,
 					"ipv6", 0);
 				if(v){
 					parseip(f->a, v);
@@ -797,14 +797,14 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 				parseba(f->a, f->r->s);
 				break;
 			default:
-				error(1, 0, "internal error: compile_cmp %s: %d",
+				sysfatal( "internal error: compile_cmp %s: %d",
 					proto, fld->ftype);
 			}
 			f->l = f->r = NULL;
 			return;
 		}
 	}
-	error(1, 0, "unknown %s field in: %s = %s", proto, f->l->s, f->r->s);
+	sysfatal( "unknown %s field in: %s = %s", proto, f->l->s, f->r->s);
 }
 
 void
@@ -980,5 +980,5 @@ defaultframer(int fd, uint8_t *pkt, int pktlen)
 /* this is gross but I can't deal with yacc nonsense just now. */
 void yyerror(void)
 {
-	error(1, 0, "yyerror");
+	sysfatal( "yyerror");
 }

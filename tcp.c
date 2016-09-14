@@ -99,7 +99,7 @@ p_compile(Filter *f)
 			f->subop = Osd;
 			return;
 		}
-	error(1, 0, "unknown tcp field or protocol: %s", f->s);
+	sysfatal( "unknown tcp field or protocol: %s", f->s);
 }
 
 static int

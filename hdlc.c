@@ -94,7 +94,7 @@ p_compile(Filter *f)
 			f->subop = Ot;
 			return;
 		}
-	error(1, 0, "unknown ethernet field or protocol: %s", f->s);
+	sysfatal( "unknown ethernet field or protocol: %s", f->s);
 }
 
 static int
@@ -184,6 +184,6 @@ Proto hdlc =
 	p_seprint,
 	p_mux,
 	"%#.4lux",
-	nil,
+	NULL,
 	p_framer,
 };

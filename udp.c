@@ -81,7 +81,7 @@ p_compile(Filter *f)
 			return;
 		}
 
-	error(1, 0, "unknown udp field or protocol: %s", f->s);
+	sysfatal( "unknown udp field or protocol: %s", f->s);
 }
 
 static int

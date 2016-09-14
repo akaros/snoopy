@@ -87,11 +87,11 @@ p_seprint(Msg *m)
 
 Proto rtcp = {
 	"rtcp",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprint,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };

@@ -258,60 +258,60 @@ p_seprintar(Msg *m)
 Proto dns =
 {
 	"dns",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprint,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
 static Proto dnsqd =
 {
 	"dns.qd",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprintqd,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
 static Proto dnsan =
 {
 	"dns.an",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprintan,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
 static Proto dnsns =
 {
 	"dns.ns",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprintns,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
 static Proto dnsar =
 {
 	"dns.ar",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprintar,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };
 
@@ -323,7 +323,7 @@ emalloc(int n)
 
 	v = mallocz(n, 1);
 	if(v == NULL)
-		error(1, 0, "out of memory");
+		sysfatal( "out of memory");
 	return v;
 }
 
@@ -332,7 +332,7 @@ estrdup(char *s)
 {
 	s = strdup(s);
 	if(s == NULL)
-		error(1, 0, "out of memory");
+		sysfatal( "out of memory");
 	return s;
 }
 

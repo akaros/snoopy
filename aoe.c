@@ -69,7 +69,7 @@ p_compile(Filter *f)
 			f->subop = Ocmd;
 			return;
 		}
-	error(1, 0, "unknown aoe field: %s", f->s);
+	sysfatal( "unknown aoe field: %s", f->s);
 }
 
 static int

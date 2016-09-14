@@ -70,7 +70,7 @@ p_compile(Filter *f)
 			f->subop = Odesc;
 			return;
 		}
-	error(1, 0, "unknown eap_key field or type: %s", f->s);
+	sysfatal( "unknown eap_key field or type: %s", f->s);
 }
 
 static int
@@ -153,7 +153,7 @@ Proto eapol_key =
 	p_seprint,
 	p_mux,
 	"%lu",
-	nil,
+	NULL,
 	defaultframer,
 };
 
@@ -161,10 +161,10 @@ Proto rc4keydesc =
 {
 	"rc4keydesc",
 	p_compile,
-	nil,
+	NULL,
 	p_seprintrc4,
-	nil,
-	nil,
-	nil,
+	NULL,
+	NULL,
+	NULL,
 	defaultframer,
 };

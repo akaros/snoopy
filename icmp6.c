@@ -160,7 +160,7 @@ p_compile(Filter *f)
 		f->subop = Op;
 		return;
 	}
-	error(1, 0, "unknown icmp field or protocol: %s", f->s);
+	sysfatal( "unknown icmp field or protocol: %s", f->s);
 }
 
 static int

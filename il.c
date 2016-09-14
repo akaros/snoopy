@@ -78,7 +78,7 @@ p_compile(Filter *f)
 			f->subop = Osd;
 			return;
 		}
-	error(1, 0, "unknown il field or protocol: %s", f->s);
+	sysfatal( "unknown il field or protocol: %s", f->s);
 }
 
 static int

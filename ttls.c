@@ -100,11 +100,11 @@ p_seprint(Msg *m)
 Proto ttls =
 {
 	"ttls",
-	nil,
-	nil,
+	NULL,
+	NULL,
 	p_seprint,
 	p_mux, /* we need this to get the dump printed */
 	"%lu",
-	nil,
+	NULL,
 	defaultframer,
 };

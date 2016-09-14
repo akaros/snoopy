@@ -103,7 +103,7 @@ p_compile(Filter *f)
 			f->subop = Ot;
 			return;
 		}
-	error(1, 0, "unknown bootp field: %s", f->s);
+	sysfatal( "unknown bootp field: %s", f->s);
 }
 
 static int
