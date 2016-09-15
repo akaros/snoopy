@@ -12,6 +12,9 @@
  */
 #define _GNU_SOURCE 1
 #include "ip.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/fcntl.h>
 
 //#include <fcall.h>
 //#include <libsec.h>
@@ -20,7 +23,6 @@
 #include "protos.h"
 #include "y.tab.h"
 
-#define Blen 512
 int Cflag;
 int pflag;
 int Nflag;
@@ -69,14 +71,15 @@ usage(void)
 }
 
 static struct option long_options[] = {
+	{"help",          no_argument,       0, '?'},
 	{"C",         no_argument,       0, 'C'},
 	{"d",         no_argument,       0, 'd'},
 	{"D",         no_argument,       0, 'D'},
 	{"p",         no_argument,       0, 'p'},
 	{"t",         no_argument,       0, 't'},
-	{"help",          no_argument,       0, 'h'},
 	{"s",          no_argument,       0, 's'},
 
+	{"proto",          required_argument,       0, 'h'},
 	{"M",          required_argument,       0, 'M'},
 	{"N",          required_argument,       0, 'N'},
 	{"f",          required_argument,       0, 'f'},
@@ -113,10 +116,10 @@ main(int argc, char **argv)
 
 	mkprotograph();
 
-	while ((c = getopt_long(argc, argv, "CdDpthsM:N:f:", long_options,
+	while ((c = getopt_long(argc, argv, "?CdDptsh:M:N:f:", long_options,
 	                        &option_index)) != -1) {
 		switch (c) {
-		case 'h':
+		case '?':
 		default:
 		printusage();
 		//printhelp(ARGF());
@@ -185,14 +188,14 @@ main(int argc, char **argv)
 	} else if((!tiflag) && strstr(file, "ipifc")){
 		if(root == NULL)
 			root = &ip;
-		snprint(buf, Blen, "%s/snoop", file);
+		snprintf(buf, Blen, "%s/snoop", file);
 		fd = open(buf, O_RDONLY);
 		if(fd < 0)
 			sysfatal("opening %s: %r", buf);
 	} else {
 		if(root == NULL)
 			root = &ether;
-		fd = open(file, OREAD);
+		fd = open(file, O_RDONLY);
 		if(fd < 0)
 			sysfatal("opening %s: %r", file);
 	}
@@ -486,7 +489,7 @@ _fillin(Filter *f, Proto *last, int depth)
 	if(depth-- <= 0)
 		return NULL;
 
-	for(m = last->mux; m != NULL && m->name != nil; m++){
+	for(m = last->mux; m != NULL && m->name != NULL; m++){
 		if(m->pr == NULL)
 			continue;
 		if(f->pr == m->pr)
@@ -495,7 +498,7 @@ _fillin(Filter *f, Proto *last, int depth)
 		if(nf != NULL)
 			return addnode(nf, m->pr);
 	}
-	return nil;
+	return NULL;
 }
 
 static Filter*
@@ -729,7 +732,7 @@ compile(Filter *f)
 		printfilter(f, "after optimize");
 
 	/* protocol specific compilations */
-	_compile(f, nil);
+	_compile(f, NULL);
 
 	/* at this point, the root had better be the root proto */
 	if(findbogus(f)){
@@ -902,13 +905,13 @@ startmc(void)
 		return;
 	default:
 		close(p[0]);
-		dup(p[1], 1);
+		dup2(p[1], 1);
 		if(p[1] != 1)
 			close(p[1]);
 		return;
 	case 0:
 		close(p[1]);
-		dup(p[0], 0);
+		dup2(p[0], 0);
 		if(p[0] != 0)
 			close(p[0]);
 		execl("/bin/mc", "mc", NULL);
@@ -963,7 +966,7 @@ printhelp(char *name)
 	if(pr->mux){
 		printf("%s's subprotos:\n", pr->name);
 		startmc();
-		snprint(fmt, sizeof fmt, "  %s %%s\n", pr->valfmt);
+		snprintf(fmt, sizeof fmt, "  %s %%s\n", pr->valfmt);
 		for(m=pr->mux; m->name != NULL; m++)
 			printf(fmt, m->val, m->name);
 		stopmc();

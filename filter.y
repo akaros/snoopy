@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <string.h>
 #include "dat.h"
 
 char	*yylp;		/* next character to be lex'd */
