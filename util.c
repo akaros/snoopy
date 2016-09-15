@@ -48,6 +48,7 @@ void sysfatal(const char *fmt, ...)
 	exit(1);
 }
 
+#if 0
 uint64_t nsec(void)
 {
 	uint64_t ret;
@@ -60,3 +61,4 @@ uint64_t nsec(void)
 	ret *= 1000ULL;
 	return ret;
 }
+#endif

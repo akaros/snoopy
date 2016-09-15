@@ -120,3 +120,4 @@ char *seprint(char *buf, char *end, const char *fmt, ...);
 void sysfatal(const char *fmt, ...);
 int readn(int fd, uint8_t *buf, int len);
 uint64_t nsec(void);
+int dial(char *dest, char *local, char *dir, int *cfdp, int flags);

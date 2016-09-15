@@ -38,6 +38,7 @@ il.c \
 ip6.c \
 ip.c \
 main.c \
+protos.c \
 rarp.c \
 rc4keydesc.c \
 rtcp.c \
@@ -45,7 +46,7 @@ rtp.c \
 tcp.c \
 ttls.c \
 udp.c \
-readn.c util.c \
+dial.c readn.c util.c \
 y.tab.c
 
 NO=\

@@ -9,6 +9,10 @@
 char	*yylp;		/* next character to be lex'd */
 char	*yybuffer;
 char	*yyend;		/* end of buffer to be parsed */
+int yylex(void);
+
+void yyerror(char*_);
+#define YY_(x) x
 %}
 
 %term LOR
@@ -112,11 +116,3 @@ yylex(void)
 	yylval->op = c;
 	return c;
 }
-
-/*
-void
-yyerror(char*_)
-{
-	sysfatal("error parsing filter");
-}
-*/

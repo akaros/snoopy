@@ -68,7 +68,7 @@ static int call(char *clone, char *dest, int *cfdp, char *dir, char *local,
 	return fd;
 }
 
-int dial9(char *dest, char *local, char *dir, int *cfdp, int flags)
+int dial(char *dest, char *local, char *dir, int *cfdp, int flags)
 {
 	char net[128];
 	char netdir[128], csname[NETPATHLEN], *slp;
@@ -81,7 +81,7 @@ int dial9(char *dest, char *local, char *dir, int *cfdp, int flags)
 	/* go for a standard form net!... */
 	p = strchr(dest, '!');
 	if(p == 0){
-		sprintf(net, "net!%.*s", sizeof(net)-5, dest);
+		sprintf(net, "net!%.*s", (int)(sizeof(net)-5), dest);
 	} else {
 		strncpy(net, dest, sizeof(net)-1);
 		net[sizeof(net)-1] = 0;

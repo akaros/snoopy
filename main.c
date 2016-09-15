@@ -181,7 +181,7 @@ main(int argc, char **argv)
 		if(root == NULL)
 			root = &ether;
 		snprintf(buf, Blen, "%s!-1", file);
-		fd = dial(buf, 0, 0, &cfd);
+		fd = dial(buf, 0, 0, &cfd, 0);
 		if(fd < 0)
 			sysfatal("dialing %s: %r", buf);
 		if(pflag && write(cfd, prom, strlen(prom)) < 0)
@@ -774,9 +774,10 @@ parseba(uint8_t *to, char *from)
 void
 compile_cmp(char *proto, Filter *f, Field *fld)
 {
+#if 0       
 	uint8_t x[IPaddrlen];
 	char *v;
-
+#endif
 	if(f->op != '=')
 		sysfatal( "internal error: compile_cmp %s: not a cmp", proto);
 
@@ -788,6 +789,12 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 			case Fnum:
 				f->ulv = atoi(f->r->s);
 				break;
+			case Fether:
+			case Fv4ip:
+			case Fv6ip:
+				sysfatal("Sorry, not supported yet");
+				break;
+#if 0
 			case Fether:
 				v = csgetvalue(NULL, "sys", (char*)f->r->s,
 					"ether", 0);
@@ -815,6 +822,7 @@ compile_cmp(char *proto, Filter *f, Field *fld)
 				}else
 					parseip(f->a, f->r->s);
 				break;
+#endif
 			case Fba:
 				parseba(f->a, f->r->s);
 				break;
@@ -926,7 +934,7 @@ stopmc(void)
 {
 	close(1);
 	dup2(fd1, 1);
-	wait();
+	wait(NULL);
 }
 
 void

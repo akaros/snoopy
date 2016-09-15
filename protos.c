@@ -1,5 +1,4 @@
-#include <u.h>
-#include <libc.h>
+#include "ip.h"
 #include "dat.h"
 #include "protos.h"
 
@@ -46,5 +45,5 @@ Proto *protos[] = {
 	&tcp,
 	&ttls,
 	&udp,
-	nil,
+	NULL,
 };
