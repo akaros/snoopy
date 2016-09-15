@@ -65,7 +65,7 @@ yylex(void)
 	char *p;
 	int c;
 
-	if(yylp == nil)
+	if(yylp == NULL)
 		return 0;
 	while(isspace(*yylp))
 		yylp++;
@@ -78,9 +78,9 @@ yylex(void)
 	if(p == 0){
 		yylval->op = WORD;
 		yylval->s = strdup(yylp);
-		if(yylval->s == nil)
+		if(yylval->s == NULL)
 			sysfatal("parsing filter: %r");
-		yylp = nil;
+		yylp = NULL;
 		return WORD;
 	}
 	c = *p;
@@ -88,7 +88,7 @@ yylex(void)
 		yylval->op = WORD;
 		*p = 0;
 		yylval->s = strdup(yylp);
-		if(yylval->s == nil)
+		if(yylval->s == NULL)
 			sysfatal("parsing filter: %r");
 		*p = c;
 		yylp = p;

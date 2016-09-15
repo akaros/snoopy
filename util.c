@@ -10,6 +10,7 @@
 
 #include "ip.h"
 #include "dat.h"
+#include <stdarg.h>
 
 /* convenience function: do a print, return the pointer to the end. */
 char *seprint(char *buf, char *end, const char *fmt, ...)
@@ -36,8 +37,9 @@ void sysfatal(const char *fmt, ...)
 	va_list ap;
 	int rc;
 	static char buf[512];
+
 	va_start(ap, fmt);
-	rc = vsnprintf(buf, n, fmt, ap);
+	rc = vsnprintf(buf, sizeof(buf), fmt, ap);
 	va_end(ap);
 
 	if (rc >= 0)
