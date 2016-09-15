@@ -118,3 +118,5 @@ extern Filter *filter;
 
 char *seprint(char *buf, char *end, const char *fmt, ...);
 void sysfatal(const char *fmt, ...);
+int readn(int fd, uint8_t *buf, int len);
+uint64_t nsec(void);

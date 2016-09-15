@@ -11,6 +11,7 @@
 #include "ip.h"
 #include "dat.h"
 #include <stdarg.h>
+#include <sys/time.h>
 
 /* convenience function: do a print, return the pointer to the end. */
 char *seprint(char *buf, char *end, const char *fmt, ...)
@@ -46,4 +47,16 @@ void sysfatal(const char *fmt, ...)
 		fprintf(stderr, buf);
 	exit(1);
 }
-	 
+
+uint64_t nsec(void)
+{
+	uint64_t ret;
+	struct timeval t;
+	gettimeofday(&t, NULL);
+
+	ret = t.tv_sec;
+	ret *= 1000000ULL;
+	ret += t.tv_usec;
+	ret *= 1000ULL;
+	return ret;
+}
