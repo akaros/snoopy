@@ -38,6 +38,17 @@ il.c \
 ip6.c \
 ip.c \
 main.c \
+rarp.c \
+rc4keydesc.c \
+rtcp.c \
+rtp.c \
+tcp.c \
+ttls.c \
+udp.c \
+util.c \
+y.tab.c
+
+NO=\
 ospf.c \
 ppp.c \
 ppp_ccp.c \
@@ -47,21 +58,16 @@ ppp_ipcp.c \
 ppp_lcp.c \
 pppoe_disc.c \
 pppoe_sess.c \
-rarp.c \
-rc4keydesc.c \
-rtcp.c \
-rtp.c \
-tcp.c \
-ttls.c \
-udp.c \
-util.c
-
-NO=\
 dns.c \
 ninep.c \
 
 all: $(ALL)
 	scp $(ALL) skynet:
+
+y.tab.c: y.tab.h 
+
+y.tab.h: filter.y
+	yacc --defines filter.y
 
 install: all
 	echo "Installing $(ALL) in $(DEST)"

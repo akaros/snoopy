@@ -10,8 +10,9 @@
 /*
  * snoopy - network sniffer
  */
-
+#define _GNU_SOURCE 1
 #include "ip.h"
+
 //#include <fcall.h>
 //#include <libsec.h>
 //#include <ndb.h>
@@ -19,6 +20,7 @@
 #include "protos.h"
 #include "y.tab.h"
 
+#define Blen 512
 int Cflag;
 int pflag;
 int Nflag;
@@ -26,6 +28,8 @@ int Mflag;
 int sflag;
 int tiflag;
 int toflag;
+char *argv0;
+char *buf;
 
 char *prom = "promiscuous";
 
@@ -37,7 +41,6 @@ enum
 
 Filter *filter;
 Proto *root;
-Biobuf out;
 int64_t starttime, pkttime;
 int pcap;
 
@@ -54,26 +57,43 @@ void	pcaphdr(void);
 void
 printusage(void)
 {
-	fprint(2, "usage: %s [-CDdpst] [-N n] [-f filter] [-h first-header] path\n", argv0);
-	fprint(2, "  for protocol help: %s -? [proto]\n", argv0);
+	fprintf(stderr, "usage: %s [-CDdpst] [-N n] [-f filter] [-h first-header] path\n", argv0);
+	fprintf(stderr, "  for protocol help: %s -? [proto]\n", argv0);
 }
 
 void
 usage(void)
 {
 	printusage();
-	exits("usage");
+	exit(1);
 }
 
-void
+static struct option long_options[] = {
+	{"C",         no_argument,       0, 'C'},
+	{"d",         no_argument,       0, 'd'},
+	{"D",         no_argument,       0, 'D'},
+	{"p",         no_argument,       0, 'p'},
+	{"t",         no_argument,       0, 't'},
+	{"help",          no_argument,       0, 'h'},
+	{"s",          no_argument,       0, 's'},
+
+	{"M",          required_argument,       0, 'M'},
+	{"N",          required_argument,       0, 'N'},
+	{"f",          required_argument,       0, 'f'},
+	{}
+};
+
+int
 main(int argc, char **argv)
 {
+	int option_index;
 	uint8_t *pkt;
 	char *buf, *file, *p, *e;
 	int fd, cfd;
 	int n;
+	char c;
 
-
+	argv0 = argv[0];
 /*
 	fmtinstall('E', eipfmt);
 	fmtinstall('V', eipfmt);
@@ -93,24 +113,25 @@ main(int argc, char **argv)
 
 	mkprotograph();
 
-	ARGBEGIN{
-	default:
-		usage();
-	case '?':
+	while ((c = getopt_long(argc, argv, "CdDpthsM:N:f:", long_options,
+	                        &option_index)) != -1) {
+		switch (c) {
+		case 'h':
+		default:
 		printusage();
-		printhelp(ARGF());
-		exits(0);
+		//printhelp(ARGF());
+		exit(0);
 		break;
 	case 'M':
-		p = EARGF(usage());
+		p = optarg;
 		Mflag = atoi(p);
 		break;
 	case 'N':
-		p = EARGF(usage());
+		p = optarg;
 		Nflag = atoi(p);
 		break;
 	case 'f':
-		p = EARGF(usage());
+		p = optarg;
 		yyinit(p);
 		yyparse();
 		break;
@@ -118,7 +139,7 @@ main(int argc, char **argv)
 		sflag = 1;
 		break;
 	case 'h':
-		p = EARGF(usage());
+		p = optarg;
 		root = findproto(p);
 		if(root == NULL)
 			sysfatal("unknown protocol: %s", p);
@@ -139,7 +160,8 @@ main(int argc, char **argv)
 	case 'p':
 		pflag = 0;
 		break;
-	}ARGEND;
+		}
+	}
 
 	if(pcap)
 		pcaphdr();
@@ -154,17 +176,17 @@ main(int argc, char **argv)
 	if((!tiflag) && strstr(file, "ether")){
 		if(root == NULL)
 			root = &ether;
-		snprint(buf, Blen, "%s!-1", file);
+		snprintf(buf, Blen, "%s!-1", file);
 		fd = dial(buf, 0, 0, &cfd);
 		if(fd < 0)
 			sysfatal("dialing %s: %r", buf);
-		if(pflag && fprint(cfd, prom, strlen(prom)) < 0)
+		if(pflag && write(cfd, prom, strlen(prom)) < 0)
 			sysfatal("setting %s", prom);
 	} else if((!tiflag) && strstr(file, "ipifc")){
 		if(root == NULL)
 			root = &ip;
 		snprint(buf, Blen, "%s/snoop", file);
-		fd = open(buf, OREAD);
+		fd = open(buf, O_RDONLY);
 		if(fd < 0)
 			sysfatal("opening %s: %r", buf);
 	} else {
@@ -189,11 +211,12 @@ main(int argc, char **argv)
 			n = NetS(pkt);
 			if(readn(fd, pkt, n) != n)
 				break;
-			if(filterpkt(filter, pkt, pkt+n, root, 1))
+			if(filterpkt(filter, pkt, pkt+n, root, 1)){
 				if(toflag)
 					tracepkt(pkt, n);
 				else
 					printpkt(buf, e, pkt, pkt+n);
+			}
 		}
 	} else {
 		/* read a real time stream */
@@ -203,11 +226,12 @@ main(int argc, char **argv)
 			if(n <= 0)
 				break;
 			pkttime = nsec();
-			if(filterpkt(filter, pkt, pkt+n, root, 1))
+			if(filterpkt(filter, pkt, pkt+n, root, 1)){
 				if(toflag)
 					tracepkt(pkt, n);
 				else
 					printpkt(buf, e, pkt, pkt+n);
+			}
 		}
 	}
 }
@@ -218,7 +242,7 @@ newfilter(void)
 {
 	Filter *f;
 
-	f = mallocz(sizeof(*f), 1);
+	f = calloc(1, sizeof(*f));
 	if(f == NULL)
 		sysfatal( "newfilter: %r");
 	return f;
@@ -250,7 +274,7 @@ _filterpkt(Filter *f, Msg *m)
 				return 0;
 			m->needroot = 0;
 		}else{
-			if(m->pr && (m->pr->filter==nil || !(m->pr->filter)(f, m)))
+			if(m->pr && (m->pr->filter==NULL || !(m->pr->filter)(f, m)))
 				return 0;
 		}
 		if(f->l == NULL)
@@ -388,7 +412,7 @@ findproto(char *name)
 	for(i = 0; i < nprotos; i++)
 		if(strcmp(xprotos[i]->name, name) == 0)
 			return xprotos[i];
-	return nil;
+	return NULL;
 }
 
 /*
@@ -426,7 +450,7 @@ mkprotograph(void)
 
 	for(l = protos; *l != NULL; l++){
 		pr = *l;
-		for(m = pr->mux; m != NULL && m->name != nil; m++){
+		for(m = pr->mux; m != NULL && m->name != NULL; m++){
 			m->pr = findproto(m->name);
 			if(m->pr == NULL)
 				m->pr = addproto(m->name);
@@ -460,7 +484,7 @@ _fillin(Filter *f, Proto *last, int depth)
 	Filter *nf;
 
 	if(depth-- <= 0)
-		return nil;
+		return NULL;
 
 	for(m = last->mux; m != NULL && m->name != nil; m++){
 		if(m->pr == NULL)
@@ -486,7 +510,7 @@ fillin(Filter *f, Proto *last)
 			return f;
 		f = fillin(f, root);
 		if(f == NULL)
-			return nil;
+			return NULL;
 		return addnode(f, root);
 	}
 
@@ -531,7 +555,7 @@ complete(Filter *f, Proto *last)
 		f->pr = pr;
 		if(pr == NULL){
 			if(f->l != NULL){
-				fprint(2, "%s unknown proto, ignoring params\n",
+				fprintf(stderr, "%s unknown proto, ignoring params\n",
 					f->s);
 				f->l = NULL;
 			}
@@ -644,7 +668,7 @@ findbogus(Filter *f)
 			rv |= findbogus(f->r);
 		return rv;
 	} else if(f->pr != root){
-		fprint(2, "bad top-level protocol: %s\n", f->s);
+		fprintf(stderr, "bad top-level protocol: %s\n", f->s);
 		return 1;
 	}
 	return 0;
@@ -697,7 +721,7 @@ compile(Filter *f)
 		return f;
 
 	/* fill in the missing header filters */
-	f = complete(f, nil);
+	f = complete(f, NULL);
 
 	/* constant folding */
 	f = optimize(f);
@@ -709,8 +733,8 @@ compile(Filter *f)
 
 	/* at this point, the root had better be the root proto */
 	if(findbogus(f)){
-		fprint(2, "bogus filter\n");
-		exits("bad filter");
+		fprintf(stderr, "bogus filter\n");
+		exit(1);
 	}
 
 	return f;
@@ -812,15 +836,15 @@ _pf(Filter *f)
 	s = NULL;
 	switch(f->op){
 	case '!':
-		fprint(2, "!");
+		fprintf(stderr, "!");
 		_pf(f->l);
 		break;
 	case WORD:
-		fprint(2, "%s", f->s);
+		fprintf(stderr, "%s", f->s);
 		if(f->l != NULL){
-			fprint(2, "(");
+			fprintf(stderr, "(");
 			_pf(f->l);
-			fprint(2, ")");
+			fprintf(stderr, ")");
 		}
 		break;
 	case LAND:
@@ -833,13 +857,13 @@ _pf(Filter *f)
 	print:
 		_pf(f->l);
 		if(s)
-			fprint(2, " %s ", s);
+			fprintf(stderr, " %s ", s);
 		else
-			fprint(2, " %c ", f->op);
+			fprintf(stderr, " %c ", f->op);
 		_pf(f->r);
 		break;
 	default:
-		fprint(2, "???");
+		fprintf(stderr, "???");
 		break;
 	}
 }
@@ -847,9 +871,9 @@ _pf(Filter *f)
 void
 printfilter(Filter *f, char *tag)
 {
-	fprint(2, "%s: ", tag);
+	fprintf(stderr, "%s: ", tag);
 	_pf(f);
-	fprint(2, "\n");
+	fprintf(stderr, "\n");
 }
 
 void
@@ -869,7 +893,7 @@ startmc(void)
 	int p[2];
 	
 	if(fd1 == -1)
-		fd1 = dup(1, -1);
+		fd1 = dup(1);
 	
 	if(pipe(p) < 0)
 		return;
@@ -887,9 +911,9 @@ startmc(void)
 		dup(p[0], 0);
 		if(p[0] != 0)
 			close(p[0]);
-		execl("/bin/mc", "mc", nil);
+		execl("/bin/mc", "mc", NULL);
 		cat();
-		_exits(0);
+		_exit(0);
 	}
 }
 
@@ -897,8 +921,8 @@ void
 stopmc(void)
 {
 	close(1);
-	dup(fd1, 1);
-	waitpid();
+	dup2(fd1, 1);
+	wait();
 }
 
 void

@@ -1,0 +1,50 @@
+#include <u.h>
+#include <libc.h>
+#include "dat.h"
+#include "protos.h"
+
+Proto *protos[] = {
+	&aoe,
+	&aoeata,
+	&aoecmd,
+	&aoemask,
+	&aoemd,
+	&aoerr,
+	&arp,
+	&bootp,
+	&cec,
+	&dhcp,
+//	&dns,
+	&dump,
+	&eap,
+	&eap_identity,
+	&eapol,
+	&eapol_key,
+	&ether,
+	&gre,
+	&hdlc,
+	&icmp6,
+	&icmp,
+	&il,
+	&ip6,
+	&ip,
+//	&ninep,
+#if 0
+	&ospf,
+	&ppp,
+	&ppp_ccp,
+	&ppp_chap,
+	&ppp_ipcp,
+	&ppp_lcp,
+	&pppoe_disc,
+	&pppoe_sess,
+#endif
+	&rarp,
+	&rc4keydesc,
+	&rtcp,
+	&rtp,
+	&tcp,
+	&ttls,
+	&udp,
+	nil,
+};
