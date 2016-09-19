@@ -66,6 +66,8 @@ p_seprint(Msg *m)
 		}
 	} else {
 		for(i = 0; i < n && p+1<e; i++){
+			if (i)
+				*p++ = ' ';
 			c = ps[i];
 			*p++ = tohex[c>>4];
 			*p++ = tohex[c&0xf]; 
