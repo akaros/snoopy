@@ -16,6 +16,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/fcntl.h>
+#include <parlib/printf-ext.h>
+#include <ndblib/fcallfmt.h>
 
 //#include <fcall.h>
 //#include <libsec.h>
@@ -87,6 +89,37 @@ static struct option long_options[] = {
 	{}
 };
 
+/* Akaros's printf function for IP addrs expects the v6 struct that can also
+ * hold a v4.  Snoopy seems to have a different header in ip.c, where IPv4 addrs
+ * are just 4 bytes. */
+static int __printf_ipv4addr(FILE *stream, uint8_t *ipaddr)
+{
+	return fprintf(stream, "%d.%d.%d.%d", ipaddr[0], ipaddr[1],
+	               ipaddr[2], ipaddr[3]);
+}
+
+static int printf_ipv4addr(FILE *stream, const struct printf_info *info,
+                           const void *const *args)
+{
+    /* args is an array of pointers, each of which points to an arg.
+     * to extract: TYPE x = *(TYPE*)args[n]. */
+    uint8_t *ipaddr = *(uint8_t**)args[0];
+    return __printf_ipv4addr(stream, ipaddr);
+}
+
+static int printf_ipv4addr_info(const struct printf_info* info, size_t n, int *argtypes,
+                                int *size)
+{
+    /* seems like this is how many va_args we will use, and how big each was
+     * we're supposed to fill up to n, i think.  we're only doing one */
+    if (n > 0) {
+        argtypes[0] = PA_POINTER;
+        size[0] = sizeof(uint8_t*);
+    }
+    /* returns the nr of args required by the format string, no matter what */
+    return 1;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -98,13 +131,19 @@ main(int argc, char **argv)
 	char c;
 
 	argv0 = argv[0];
-/*
-	fmtinstall('E', eipfmt);
-	fmtinstall('V', eipfmt);
-	fmtinstall('I', eipfmt);
-	fmtinstall('H', encodefmt);
-	fmtinstall('F', fcallfmt);
-*/
+
+	if (register_printf_specifier('E', printf_ethaddr, printf_ethaddr_info))
+		printf("Failed to register 'E'\n");
+	/* Might have trouble with %I.  Not sure on the details. */
+	if (register_printf_specifier('I', printf_ipaddr, printf_ipaddr_info))
+		printf("Failed to register 'I'\n");
+	/* I think they wanted %V to be IPv4 */
+	if (register_printf_specifier('V', printf_ipv4addr, printf_ipv4addr_info))
+		printf("Failed to register 'V'\n");
+	if (register_printf_specifier('F', printf_fcall, printf_fcall_info))
+		printf("Failed to register 'F'\n");
+	if (register_printf_specifier('H', printf_hexdump, printf_hexdump_info))
+		printf("Failed to register 'H'\n");
 
 	pkt = malloc(Pktlen+16);
 	pkt += 16;
