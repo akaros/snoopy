@@ -170,12 +170,13 @@ main(int argc, char **argv)
 	if(pcap)
 		pcaphdr();
 
-	if(argc == 0){
+	/* next un-processed arg is the [packet-source] */
+	if(argc == optind){
 		file = "/net/ether0";
 		if(root != NULL)
 			root = &ether;
 	} else
-		file = argv[0];
+		file = argv[optind];
 
 	if((!tiflag) && strstr(file, "ether")){
 		if(root == NULL)
