@@ -43,6 +43,8 @@ enum
 {
 	Pktlen=	64*1024,
 	Blen=	16*1024,
+	Pcaphdrlen = 16,
+	Fakeethhdrlen = 14,
 };
 
 Filter *filter;
@@ -146,8 +148,8 @@ main(int argc, char **argv)
 	if (register_printf_specifier('H', printf_hexdump, printf_hexdump_info))
 		printf("Failed to register 'H'\n");
 
-	pkt = malloc(Pktlen+16);
-	pkt += 16;
+	pkt = malloc(Pktlen + Pcaphdrlen + Fakeethhdrlen);
+	pkt += Pcaphdrlen + Fakeethhdrlen;
 	buf = malloc(Blen);
 	e = buf+Blen-1;
 
@@ -390,6 +392,19 @@ pcaphdr(void)
 	write(1, &hdr, sizeof(hdr));
 }
 
+/* This is a bit hacky, assuming the world is ethernet. */
+static bool proto_is_link_layer(Proto *p)
+{
+	return p == &ether;
+}
+
+/* This also fakes an IP packet, in lieu of reading the packet. */
+static char fake_ethernet_header[] = {
+	0x00, 0x00, 0x00, 0x01, 0x02, 0x03,
+	0x00, 0x00, 0x00, 0x04, 0x05, 0x06,
+	0x08, 0x00,
+};
+
 /*
  *  write out a packet trace
  */
@@ -397,15 +412,27 @@ void
 tracepkt(uint8_t *ps, int len)
 {
 	struct pcap_pkthdr *goo;
+	size_t hdrlen = Pcaphdrlen;
+	char *fake_eth;
 
 	if(Mflag && len > Mflag)
 		len = Mflag;
 	if(pcap){
-		goo = (struct pcap_pkthdr*)(ps-16);
+		/* pcap needs a link-layer header.  this will fake one.  len is the
+		 * packet length reported to pcap. */
+		if (!proto_is_link_layer(root)) {
+			hdrlen += Fakeethhdrlen;
+			len += Fakeethhdrlen;
+		}
+		goo = (struct pcap_pkthdr*)(ps - hdrlen);
 		goo->ts = pkttime;
 		goo->caplen = len;
 		goo->len = len;
-		write(1, goo, len+16);
+		if (!proto_is_link_layer(root)) {
+			fake_eth = (char*)goo + Pcaphdrlen;
+			memcpy(fake_eth, fake_ethernet_header, Fakeethhdrlen);
+		}
+		write(1, goo, len + Pcaphdrlen);
 	} else {
 		hnputs(ps-10, len);
 		hnputl(ps-8, pkttime>>32);
