@@ -1,17 +1,34 @@
 # Snoopy from harvey (from Plan 9)
 # Rules: keep this simple. Make sure the gcc is in your path and nobody gets hurt.
 
+###
+# This allows snoopy to be built from within the Akaros distribution (maybe).
+# The Makefrag exports a few things like CROSS_COMPILE and KFS_ROOT, which
+# we'll use.  We'll provide defaults if we couldn't find them.
+-include ../../Makefrag
+ifndef CROSS_COMPILE
+CROSS_COMPILE := x86_64-ucb-akaros-
+endif
+ifndef KFS_ROOT
+KFS_ROOT := $(AKAROS_ROOT)/kern/kfs
+endif
+ifndef Q
+Q ?= @
+endif
+
+
 ### Build flags for all targets
 #
-CFLAGS          = -O2 -std=gnu99 -fno-stack-protector -fgnu89-inline -fPIC -static -fno-omit-frame-pointer -g -Iinclude -Wall
-LDFLAGS          =
-LDLIBS         = -L$(AKAROS)/install/x86_64-ucb-akaros/sysroot/usr/lib -lpthread -lbenchutil -lm -liplib -lndblib -lvmm -lbenchutil
-DEST	= $(AKAROS)/kern/kfs/bin
+CFLAGS          = -O2 -std=gnu99 -fno-stack-protector -fgnu89-inline -fPIC -static -fno-omit-frame-pointer -g -Iinclude -Wall -Werror
+LDFLAGS         =
+LDLIBS          = -lpthread -lbenchutil -lm -liplib -lndblib -lvmm -lbenchutil
+DEST            = $(KFS_ROOT)/bin/
+
 
 ### Build tools
 # 
-CC=x86_64-ucb-akaros-gcc
-AR=x86_64-ucb-akaros-ar
+CC=$(CROSS_COMPILE)gcc
+AR=$(CROSS_COMPILE)ar
 ALL=snoopy
 FILES= \
 aoeata.c \
@@ -63,7 +80,6 @@ dns.c \
 ninep.c \
 
 all: $(ALL)
-	scp $(ALL) skynet:
 
 y.tab.c: y.tab.h 
 
@@ -71,14 +87,11 @@ y.tab.h: filter.y
 	yacc --defines filter.y
 
 install: all
-	echo "Installing $(ALL) in $(DEST)"
-	cp $(ALL) $(DEST)
+	$(Q)echo "Installing $(ALL) in $(DEST)"
+	$(Q)cp $(ALL) $(DEST)
 
 # compilers are fast. Just rebuild it each time.
 snoopy: $(FILES)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o snoopy $(FILES) $(LDLIBS)
 clean:
 	rm -f $(ALL) *.o
-
-
-
