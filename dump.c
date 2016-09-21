@@ -32,7 +32,7 @@ p_seprint(Msg *m)
 	char *e = m->e;
 
 	n = m->pe - ps;
-	if(n > Nflag)
+	if((Nflag != 0) && (n > Nflag))
 		n = Nflag;
 
 	isstring = 1;
