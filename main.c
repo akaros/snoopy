@@ -354,7 +354,7 @@ filterpkt(Filter *f, uint8_t *ps, uint8_t *pe, Proto *pr, int needroot)
  */
 #define PCAP_VERSION_MAJOR 2
 #define PCAP_VERSION_MINOR 4
-#define TCPDUMP_MAGIC 0xa1b2c3d4
+#define TCPDUMP_MAGIC 0xa1b23c4d
 
 struct pcap_file_header {
 	uint32_t		magic;
@@ -367,7 +367,8 @@ struct pcap_file_header {
 };
 
 struct pcap_pkthdr {
-        uint64_t	ts;	/* time stamp */
+        uint32_t	ts_sec;	/* time stamp */
+        uint32_t	ts_nsec;
         uint32_t	caplen;	/* length of portion present */
         uint32_t	len;	/* length this packet (off wire) */
 };
@@ -385,7 +386,7 @@ pcaphdr(void)
 	hdr.version_minor = PCAP_VERSION_MINOR;
   
 	hdr.thiszone = 0;
-	hdr.snaplen = 1500;
+	hdr.snaplen = Mflag ? Mflag : UINT_MAX;
 	hdr.sigfigs = 0;
 	hdr.linktype = 1;
 
@@ -425,7 +426,8 @@ tracepkt(uint8_t *ps, int len)
 			len += Fakeethhdrlen;
 		}
 		goo = (struct pcap_pkthdr*)(ps - hdrlen);
-		goo->ts = pkttime;
+		goo->ts_sec = pkttime / 1000000000;
+		goo->ts_nsec = pkttime % 1000000000;
 		goo->caplen = len;
 		goo->len = len;
 		if (!proto_is_link_layer(root)) {

@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <limits.h>
 
 
 #define ARRAY_SIZE(x) (sizeof((x))/sizeof((x)[0]))
