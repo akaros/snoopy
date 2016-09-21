@@ -6,6 +6,16 @@
  * modified, propagated, or distributed except according to the terms contained
  * in the LICENSE file.
  */
+
+#pragma once
+
+#include <parlib/timing.h>
+#include <iplib/iplib.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+
 #define ARRAY_SIZE(x) (sizeof((x))/sizeof((x)[0]))
 
 typedef struct Field Field;
@@ -119,5 +129,3 @@ extern Filter *filter;
 char *seprint(char *buf, char *end, const char *fmt, ...);
 void sysfatal(const char *fmt, ...);
 int readn(int fd, uint8_t *buf, int len);
-uint64_t nsec(void);
-int dial(char *dest, char *local, char *dir, int *cfdp, int flags);

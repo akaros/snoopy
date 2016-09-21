@@ -222,7 +222,7 @@ main(int argc, char **argv)
 		if(root == NULL)
 			root = &ether;
 		snprintf(buf, Blen, "%s!-1", file);
-		fd = dial(buf, 0, 0, &cfd, 0);
+		fd = dial9(buf, 0, 0, &cfd, 0);
 		if(fd < 0)
 			sysfatal("dialing %s: %r", buf);
 		if(write(cfd, oneblock, strlen(oneblock)) < 0)

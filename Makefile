@@ -46,7 +46,7 @@ rtp.c \
 tcp.c \
 ttls.c \
 udp.c \
-dial.c readn.c util.c \
+readn.c util.c \
 y.tab.c
 
 NO=\
