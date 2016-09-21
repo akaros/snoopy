@@ -65,12 +65,28 @@ p_seprint(Msg *m)
 			}
 		}
 	} else {
-		for(i = 0; i < n && p+1<e; i++){
-			if (i)
+		for(i = 0; i < n && p+2<e; i++){
+			if (i % 16)
 				*p++ = ' ';
 			c = ps[i];
 			*p++ = tohex[c>>4];
 			*p++ = tohex[c&0xf]; 
+			/* Attempt to dump individual bytes in ASCII */
+			if (i && (i % 16 == 15)) {
+				/* 25: 2 space, 16 chars, \n, \t, 'dump', (. */
+				if (p + 24 >= e)
+					break;
+				*p++ = ' ';
+				*p++ = ' ';
+				/* print out the *last* 16 bytes we just dumped. */
+				for (int j = i - 16; j < i; j++)
+					*p++ = isprint(ps[j]) ? ps[j] : '.';
+				*p++ = '\n';
+				*p++ = '\t';
+				for (int j = 0; j < 4; j++)
+					*p++ = ' ';
+				*p++ = ' ';
+			}
 		}
 	}
 
