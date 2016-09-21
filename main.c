@@ -37,6 +37,7 @@ char *argv0;
 char *buf;
 
 char *prom = "promiscuous";
+char *oneblock = "oneblock";
 
 enum
 {
@@ -224,6 +225,8 @@ main(int argc, char **argv)
 		fd = dial(buf, 0, 0, &cfd, 0);
 		if(fd < 0)
 			sysfatal("dialing %s: %r", buf);
+		if(write(cfd, oneblock, strlen(oneblock)) < 0)
+			sysfatal("setting %s", oneblock);
 		if(pflag && write(cfd, prom, strlen(prom)) < 0)
 			sysfatal("setting %s", prom);
 	} else if((!tiflag) && strstr(file, "ipifc")){
