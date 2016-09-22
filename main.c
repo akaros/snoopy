@@ -269,12 +269,12 @@ main(int argc, char **argv)
 		}
 	} else {
 		/* read a real time stream */
-		starttime = nsec();
+		starttime = epoch_nsec();
 		for(;;){
 			n = root->framer(fd, pkt, Pktlen);
 			if(n <= 0)
 				break;
-			pkttime = nsec();
+			pkttime = epoch_nsec();
 			if(filterpkt(filter, pkt, pkt+n, root, 1)){
 				if(toflag)
 					tracepkt(pkt, n);
