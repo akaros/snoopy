@@ -226,24 +226,24 @@ main(int argc, char **argv)
 		snprintf(buf, Blen, "%s!-1", file);
 		fd = dial9(buf, 0, 0, &cfd, 0);
 		if(fd < 0)
-			sysfatal("dialing %s: %r", buf);
+			sysfatal("Error dialing %s: %r", buf);
 		if(write(cfd, oneblock, strlen(oneblock)) < 0)
-			sysfatal("setting %s", oneblock);
+			sysfatal("Error setting %s: %r", oneblock);
 		if(pflag && write(cfd, prom, strlen(prom)) < 0)
-			sysfatal("setting %s", prom);
+			sysfatal("Error setting %s: %r", prom);
 	} else if((!tiflag) && strstr(file, "ipifc")){
 		if(root == NULL)
 			root = &ip;
 		snprintf(buf, Blen, "%s/snoop", file);
 		fd = open(buf, O_RDONLY);
 		if(fd < 0)
-			sysfatal("opening %s: %r", buf);
+			sysfatal("Error opening %s: %r", buf);
 	} else {
 		if(root == NULL)
 			root = &ether;
 		fd = open(file, O_RDONLY);
 		if(fd < 0)
-			sysfatal("opening %s: %r", file);
+			sysfatal("Error opening %s: %r", file);
 	}
 	filter = compile(filter);
 
@@ -473,7 +473,7 @@ printpkt(char *p, char *e, uint8_t *ps, uint8_t *pe)
 	*m.p++ = '\n';
 
 	if(write(1, p, m.p - p) < 0)
-		sysfatal( "stdout: %r");
+		sysfatal( "Error writing to stdout: %r");
 }
 
 Proto **xprotos;

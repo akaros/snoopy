@@ -44,7 +44,7 @@ void sysfatal(const char *fmt, ...)
 	va_end(ap);
 
 	if (rc >= 0)
-		fprintf(stderr, buf);
+		fprintf(stderr, "%s\n", buf);
 	exit(1);
 }
 
