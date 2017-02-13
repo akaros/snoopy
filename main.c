@@ -27,7 +27,6 @@
 #include "y.tab.h"
 
 int Cflag;
-int pflag;
 int Nflag;
 int Mflag;
 int sflag;
@@ -153,13 +152,12 @@ main(int argc, char **argv)
 	buf = malloc(Blen);
 	e = buf+Blen-1;
 
-	pflag = 1;
 	Nflag = 32;
 	sflag = 0;
 
 	mkprotograph();
 
-	while ((c = getopt_long(argc, argv, "?CdDptsh:M:N:f:", long_options,
+	while ((c = getopt_long(argc, argv, "?CdDtsh:M:N:f:", long_options,
 	                        &option_index)) != -1) {
 		switch (c) {
 		case '?':
@@ -203,9 +201,6 @@ main(int argc, char **argv)
 	case 'C':
 		Cflag = 1;
 		break;
-	case 'p':
-		pflag = 0;
-		break;
 		}
 	}
 
@@ -229,7 +224,7 @@ main(int argc, char **argv)
 			sysfatal("Error dialing %s: %r", buf);
 		if(write(cfd, oneblock, strlen(oneblock)) < 0)
 			sysfatal("Error setting %s: %r", oneblock);
-		if(pflag && write(cfd, prom, strlen(prom)) < 0)
+		if(write(cfd, prom, strlen(prom)) < 0)
 			sysfatal("Error setting %s: %r", prom);
 	} else if((!tiflag) && strstr(file, "ipifc")){
 		if(root == NULL)
