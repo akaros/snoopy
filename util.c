@@ -8,10 +8,11 @@
  */
 
 
+#include <sys/time.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include "ip.h"
 #include "dat.h"
-#include <stdarg.h>
-#include <sys/time.h>
 
 /* convenience function: do a print, return the pointer to the end. */
 char *seprint(char *buf, char *end, const char *fmt, ...)

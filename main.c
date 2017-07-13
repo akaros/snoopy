@@ -12,6 +12,7 @@
  */
 #define _GNU_SOURCE 1
 #include "ip.h"
+#include <stdio.h>
 #include <getopt.h>
 #include <sys/types.h>
 #include <sys/wait.h>
