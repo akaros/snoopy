@@ -447,6 +447,8 @@ printpkt(char *p, char *e, uint8_t *ps, uint8_t *pe)
 {
 	Msg m;
 	uint32_t dt;
+	ssize_t ret;
+	size_t sofar, amt;
 
 	dt = (pkttime-starttime)/1000000LL;
 	m.p = seprint(p, e, "%6.6lu ms ", dt);
@@ -468,8 +470,16 @@ printpkt(char *p, char *e, uint8_t *ps, uint8_t *pe)
 	}
 	*m.p++ = '\n';
 
-	if(write(1, p, m.p - p) < 0)
-		sysfatal( "Error writing to stdout: %r");
+	sofar = 0;
+	amt = m.p - p;
+	while (amt - sofar) {
+		ret = write(1, p + sofar, amt - sofar);
+		if (ret < 0) {
+			sysfatal( "Error writing to stdout: %r");
+			break;
+		}
+		sofar += ret;
+	}
 }
 
 Proto **xprotos;
