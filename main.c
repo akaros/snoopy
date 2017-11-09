@@ -13,6 +13,7 @@
 #define _GNU_SOURCE 1
 #include "ip.h"
 #include <stdio.h>
+#include <dirent.h>
 #include <getopt.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -123,12 +124,35 @@ static int printf_ipv4addr_info(const struct printf_info* info, size_t n, int *a
     return 1;
 }
 
+/* We just need any ether, not necessarily ether0.  ifconfig currently attaches
+ * just one NIC. */
+static const char *get_first_ether(void)
+{
+	const char *ret = "/net/ether0";
+	DIR *net;
+	struct dirent *dirent;
+
+	net = opendir("/net");
+	if (!net)
+		return ret;
+	while ((dirent = readdir(net))) {
+		/* ether\0 is 6 chars - we match on the first 5 */
+		if (!strncmp("ether", dirent->d_name, 5)) {
+			ret = strdup(dirent->d_name);
+			break;
+		}
+	}
+	closedir(net);
+	return ret;
+}
+
 int
 main(int argc, char **argv)
 {
 	int option_index;
 	uint8_t *pkt;
-	char *buf, *file, *p, *e;
+	char *buf, *p, *e;
+	const char *file;
 	int fd, cfd;
 	int n;
 	char c;
@@ -210,7 +234,7 @@ main(int argc, char **argv)
 
 	/* next un-processed arg is the [packet-source] */
 	if(argc == optind){
-		file = "/net/ether0";
+		file = get_first_ether();
 		if(root != NULL)
 			root = &ether;
 	} else
